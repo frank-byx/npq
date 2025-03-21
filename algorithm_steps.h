@@ -36,7 +36,7 @@ std::vector<Partition> Compute1dPartitions(const Dataset& dataset, const Paramet
  *
  * @return The MST of the VI graph of dimensions.
  */
-std::vector<Graph> ComputeVIMST(std::vector<Partition> partitions, const Parameters& params);
+Graph ComputeVIMST(std::vector<Partition> partitions);
 
 
 } // namespace npq
