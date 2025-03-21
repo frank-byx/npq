@@ -29,14 +29,15 @@ std::vector<Partition> Compute1dPartitions(const Dataset& dataset, const Paramet
  
  * Constructs a complete weighted graph on the set of dimensions, where each node is a dimension and
  * the weight of each edge is the Variation of Information (VI) between the partitions corresponding to
- * the incident dimensions, and returns the Minimum Spanning Tree (MST) of this graph.
+ * the incident dimensions, and computes the Minimum Spanning Tree (MST) of this graph. The MST may then be
+ * modified to satisfy a maximum degree constraint in order to improve the efficiency of the algorithm.
  *
  * @param partitions
  * @param params Dictionary of input parameters.
  *
- * @return The MST of the VI graph of dimensions.
+ * @return The (possibly degree-constrained approximation of the) MST of the VI graph over the dimensions.
  */
-Graph ComputeVIMST(std::vector<Partition> partitions);
+Graph ComputeVIMST(std::vector<Partition> partitions, const Parameters& params);
 
 
 } // namespace npq

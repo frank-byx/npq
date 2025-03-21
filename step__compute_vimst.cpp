@@ -6,13 +6,13 @@
 
 #include "algorithm_steps.h"
 #include "partition.h"
-#include "kruskal.h"
+#include "mst.h"
 
 
 namespace npq
 {
 
-Graph ComputeVIMST(std::vector<Partition> partitions)
+Graph ComputeVIMST(std::vector<Partition> partitions, const Parameters& params)
 {
 	const dim_t d = partitions.size();
 
@@ -50,7 +50,17 @@ Graph ComputeVIMST(std::vector<Partition> partitions)
 		vimst.adj[i].push_back(j);
 		vimst.adj[j].push_back(i);
 	}
+	// Note that by construction, the adjacency lists are sorted in non-decreasing order of edge weights
+	// This must be true for the following call to the RaviDCMST function to work correctly
 	
+	// Compute a degree-constrained approximation of the MST
+	dim_t maxDegree = params.mstMaxDegree;
+	if (maxDegree == -1)
+	{
+		maxDegree = static_cast<dim_t>(ceil(log2(d)));
+	}
+	RaviDCMST(vimst, maxDegree);
+
 	return vimst;
 }
 

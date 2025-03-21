@@ -130,7 +130,7 @@
   <ItemGroup>
     <ClCompile Include="1d_kmeans.cpp" />
     <ClCompile Include="graph.cpp" />
-    <ClCompile Include="kruskal.cpp" />
+    <ClCompile Include="mst.cpp" />
     <ClCompile Include="regularized_1d_kmeans.cpp" />
     <ClCompile Include="smawk.cpp" />
     <ClCompile Include="step__compute_1d_partitions.cpp" />
@@ -147,7 +147,7 @@
     <ClInclude Include="algorithm_steps.h" />
     <ClInclude Include="dataset.h" />
     <ClInclude Include="graph.h" />
-    <ClInclude Include="kruskal.h" />
+    <ClInclude Include="mst.h" />
     <ClInclude Include="regularized_1d_kmeans.h" />
     <ClInclude Include="smawk.h" />
     <ClInclude Include="parameters.h" />

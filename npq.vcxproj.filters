@@ -45,7 +45,7 @@
     <ClCompile Include="graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="kruskal.cpp">
+    <ClCompile Include="mst.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,7 +74,7 @@
     <ClInclude Include="graph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="kruskal.h">
+    <ClInclude Include="mst.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

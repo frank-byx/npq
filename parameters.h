@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dataset.h"
+
 
 namespace npq
 {
@@ -27,7 +29,15 @@ struct Parameters
 	 */
 	double targetDistortionMargin;
 
-	Parameters(double targetDistortion, double targetDistortionMargin = 0.0);
+	/**
+	 * @brief The maximum degree of each vertex in the degree-constrained approximation of the Minimum Spanning Tree (MST)
+	 * used in the second step of the algorithm.
+	 *
+	 * The default value is ceil(log2(d)), where d is the number of dimensions in the dataset.
+	 */
+	dim_t mstMaxDegree;
+
+	Parameters(double targetDistortion, double targetDistortionMargin = 0.0, dim_t mstMaxDegree = -1);
 };
 
 } // namespace npq
