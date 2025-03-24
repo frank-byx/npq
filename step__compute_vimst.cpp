@@ -42,7 +42,8 @@ Graph computeVIMST(const std::vector<Partition>& partitions, const Parameters& p
 	std::vector<Edge> mstEdges = kruskalMST(edges, d);
 
 	// Construct the adjacency list representation of the MST
-	std::vector<std::vector<dim_t>> mstAdj(d);
+	std::vector<std::vector<dim_t>> mstAdj;
+	mstAdj.resize(d);
 
 	for (const Edge& e : mstEdges)
 	{

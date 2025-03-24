@@ -74,7 +74,8 @@ Partition jointPartition(const Partition& p, const Partition& q)
     // Compute the cartesian product of partition p and partition q:
 
     // The intersection of a block from p and a block from q is stored as prod[pBlockId][qBlockId]
-    std::vector<std::unordered_map<id_t, std::vector<id_t>>> prod{ p.blockIdToVecIds.size() };
+    std::vector<std::unordered_map<id_t, std::vector<id_t>>> prod;
+	prod.resize(p.blockIdToVecIds.size());
     id_t prodBlockCount = 0;
 
     // Iterate through the blocks in partition p
@@ -89,7 +90,6 @@ Partition jointPartition(const Partition& p, const Partition& q)
             // Add the vector to the intersection of the current p and q blocks
             if (!prod[pBlockId].contains(qBlockId))
             {
-                prod[pBlockId][qBlockId] = std::vector<id_t>{};
                 ++prodBlockCount;
             }
             prod[pBlockId][qBlockId].push_back(vecId);

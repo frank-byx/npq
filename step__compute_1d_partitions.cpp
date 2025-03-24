@@ -14,7 +14,8 @@ namespace npq
 	std::vector<Partition> compute1dPartitions(const Dataset& dataset, const Parameters& params)
 	{
 		const dim_t d = dataset.dimensions.size();
-		std::vector<DPState> dpStates(d);
+		std::vector<DPState> dpStates;
+		dpStates.resize(d);
 
 		// TODO: Update to use normalized target distortion
 		const double maxCost = params.targetDistortion - params.targetDistortionMargin;

@@ -25,7 +25,7 @@ struct Parameters
 	 * squared error for the separate 1D k-means clustering/partitioning of dimensions. This is done to ensure that the
 	 * final optimal quantization computed by NPQ will achieve the target distortion with high probability.
 	 * 
-	 * The default value is <KNARF>.
+	 * The default value is 0.
 	 */
 	double targetDistortionMargin;
 
