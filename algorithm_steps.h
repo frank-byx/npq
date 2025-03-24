@@ -6,6 +6,7 @@
 #include "partition.h"
 #include "parameters.h"
 #include "graph.h"
+#include "subspace_decomposition.h"
 
 
 namespace npq
@@ -22,22 +23,41 @@ namespace npq
  * 
  * @return A vector of partitions of the dataset, one for every dimension.
  */
-std::vector<Partition> Compute1dPartitions(const Dataset& dataset, const Parameters& params);
+std::vector<Partition> compute1dPartitions(const Dataset& dataset, const Parameters& params);
 
 /**
  * @brief The second step of the algorithm.
- 
+ *
  * Constructs a complete weighted graph on the set of dimensions, where each node is a dimension and
  * the weight of each edge is the Variation of Information (VI) between the partitions corresponding to
  * the incident dimensions, and computes the Minimum Spanning Tree (MST) of this graph. The MST may then be
  * modified to satisfy a maximum degree constraint in order to improve the efficiency of the algorithm.
  *
- * @param partitions
+ * @param partitions The 1D partitions of the dataset.
  * @param params Dictionary of input parameters.
  *
  * @return The (possibly degree-constrained approximation of the) MST of the VI graph over the dimensions.
  */
-Graph ComputeVIMST(std::vector<Partition> partitions, const Parameters& params);
+Graph computeVIMST(const std::vector<Partition>& partitions, const Parameters& params);
 
+/**
+ * @brief The third step of the algorithm.
+ * 
+ * Defines an objective function that minimizes the total memory footprint of the codebooks and vector storage over the
+ * set of partitions of the set of dimensions, i.e. subspace decompositions. This objective function is optimized under
+ * the constraint that each subspace must correspond to the vertex set of a connected subtree of the given tree.
+ * The optimization algorithm is a greedy algorithm that iteratively splits and merges subspaces on edges in the tree.
+ * 
+ * @param partitions The 1D partitions of the dataset.
+ * @param tree The tree that constrains the search over subspace decompositions.
+ * @param params Dictionary of input parameters.
+ * 
+ * @return The most optimal subspace decomposition found by the greedy algorithm.
+ */
+SubspaceDecomposition computeSubspaceDecomposition(
+	const std::vector<Partition>& partitions,
+	const Graph& tree,
+	const Parameters& params
+);
 
 } // namespace npq

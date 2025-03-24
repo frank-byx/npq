@@ -21,6 +21,11 @@ typedef int32_t id_t;
  */
 typedef int16_t dim_t;
 
+/**
+ * @brief Defines a type alias for 32-bit floating point numbers used to store each component of a vector in a dataset.
+ */
+typedef float scalar_t;
+
 
 /**
  * @brief Stores a dataset of vectors with the values of each dimension contiguous in memory.
@@ -34,7 +39,7 @@ struct Dataset {
 	 * @brief The dataset, stored such that dimensions[i][j] is the value of
 	 * the i-th dimension/component of the j-th vector in the dataset.
 	 */
-	std::vector<std::vector<float>> dimensions;
+	std::vector<std::vector<scalar_t>> dimensions;
 
 	/**
 	 * @brief Constructor that takes a dataset in row-major order.
@@ -46,7 +51,7 @@ struct Dataset {
 	 * @param n The number of vectors in the dataset.
 	 * @param d The dimensionality of each vector.
 	 */
-	Dataset(float* data, id_t n, dim_t d);
+	Dataset(scalar_t* data, id_t n, dim_t d);
 };
 
 } // namespace npq

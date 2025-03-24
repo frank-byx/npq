@@ -61,7 +61,7 @@ private:
 };
 
 
-std::vector<Edge> KruskalMST(std::vector<Edge>& edges, dim_t d)
+std::vector<Edge> kruskalMST(std::vector<Edge>& edges, dim_t d)
 {
     std::sort(edges.begin(), edges.end());
     
@@ -92,11 +92,11 @@ std::vector<Edge> KruskalMST(std::vector<Edge>& edges, dim_t d)
 }
 
 
-// DFS helper function for RaviDCMST
-void DFS(dim_t curNode, dim_t parentNode, Graph& mst, const dim_t maxDegree)
+// DFS helper function for raviDCMST
+void DFS(const dim_t curNode, const dim_t parentNode, std::vector<std::vector<dim_t>>& mstAdj, const dim_t maxDegree)
 {
 	// Base case - leaf node
-	const dim_t curDegree = mst.adj[curNode].size();
+	const dim_t curDegree = mstAdj[curNode].size();
     if (curDegree == 1)
     {
 		return;
@@ -109,7 +109,7 @@ void DFS(dim_t curNode, dim_t parentNode, Graph& mst, const dim_t maxDegree)
 	dim_t prevChild = -1;
 	while (shortcutsDone < shortcutsNeeded)
 	{
-		const dim_t curChild = mst.adj[curNode][i];
+		const dim_t curChild = mstAdj[curNode][i];
 
         // Skip the parent
 		if (curChild == parentNode)
@@ -128,12 +128,12 @@ void DFS(dim_t curNode, dim_t parentNode, Graph& mst, const dim_t maxDegree)
         }
 
 		// Remove the edge between the current node and the current child
-		mst.adj[curNode].erase(mst.adj[curNode].begin() + i);
-		mst.adj[curChild].erase(std::find(mst.adj[curChild].begin(), mst.adj[curChild].end(), curNode));
+        mstAdj[curNode].erase(mstAdj[curNode].begin() + i);
+        mstAdj[curChild].erase(std::find(mstAdj[curChild].begin(), mstAdj[curChild].end(), curNode));
 
 		// Add the edge between the previous child and the current child
-		mst.adj[prevChild].push_back(curChild);
-		mst.adj[curChild].push_back(prevChild);
+        mstAdj[prevChild].push_back(curChild);
+        mstAdj[curChild].push_back(prevChild);
 
 		// Update the previous child
 		prevChild = curChild;
@@ -141,30 +141,30 @@ void DFS(dim_t curNode, dim_t parentNode, Graph& mst, const dim_t maxDegree)
 		++shortcutsDone;
 	}
 
-    assert(mst.adj[curNode].size() <= maxDegree);
+    assert(mstAdj[curNode].size() <= maxDegree);
 
 	// Recurse on the children
-	for (const dim_t& child : mst.adj[curNode])
+	for (const dim_t& child : mstAdj[curNode])
 	{
 		if (child == parentNode)
 		{
 			continue;
 		}
 
-		DFS(child, curNode, mst, maxDegree);
+		DFS(child, curNode, mstAdj, maxDegree);
 	}
 }
 
-void RaviDCMST(Graph& mst, dim_t maxDegree)
+void raviDCMST(std::vector<std::vector<dim_t>>& mstAdj, dim_t maxDegree)
 {
     assert(maxDegree >= 2);
-	dim_t d = mst.adj.size();
+	dim_t d = mstAdj.size();
 
 	// Find the root of the tree
 	dim_t root = -1;
 	for (dim_t i = 0; i < d; ++i)
 	{
-        const dim_t degree = mst.adj[i].size();
+        const dim_t degree = mstAdj[i].size();
 		if (degree >= 2)
 		{
 			root = i;
@@ -176,7 +176,7 @@ void RaviDCMST(Graph& mst, dim_t maxDegree)
 		return;
 	}
 
-    DFS(root, -1, mst, maxDegree);
+    DFS(root, -1, mstAdj, maxDegree);
 }
 
 } // namespace npq

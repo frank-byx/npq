@@ -89,7 +89,7 @@ namespace npq
 	 *
 	 * Allocates memory, computes the sorted order of the data, and computes prefix sum arrays for the cost function.
 	 */
-	void InitializeDPState(DPState& state, const std::vector<float>& data);
+	void initializeDPState(DPState& state, const std::vector<float>& data);
 
 	/**
 	 * @brief Performs a single iteration of the dynamic programming algorithm for 1D k-means clustering.
@@ -98,7 +98,7 @@ namespace npq
 	 *
 	 * @param state The current DP state object.
 	 */
-	void DoDPIteration(DPState& state);
+	void doDPIteration(DPState& state);
 
 	/**
 	 * @brief Computes the optimal clustering/paritition corresponding to the second-last row of the DP table.
@@ -108,15 +108,15 @@ namespace npq
 	 *
 	 * @param state The current DP state object.
 	 */
-	Partition ComputePartitionFromDPState(DPState& state);
+	Partition computePartitionFromDPState(DPState& state);
 
 	/**
 	 * @brief Computes the entropy of the corresponding optimal clustering/paritition.
 	 *
-	 * This is equivalent to calling Entropy(ComputePartitionFromDPState(state)), but is more efficient.
+	 * This is equivalent to calling entropy(computePartitionFromDPState(state)), but is more efficient.
 	 *
 	 * @param state The current DP state object.
 	 */
-	double ComputeEntropyFromDPState(DPState& state);
+	double computeEntropyFromDPState(DPState& state);
 
 } // namespace npq

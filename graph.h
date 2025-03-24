@@ -1,29 +1,34 @@
 #pragma once
 
-#include "Partition.h"
+#include "dataset.h"
 
 
 namespace npq
 {
 
 /**
- * @brief Represents a graph on the set of dimensions the dataset.
+ * @brief Represents a graph on the set of dimensions of the dataset.
  */
 struct Graph
 {
 	/**
 	 * @brief The adjacency list of the graph.
-	 *
-	 * The adjacency list of the graph, where adj[i] is the list of neighbors of vertex i.
 	 */
 	std::vector<std::vector<dim_t>> adj;
 
 	/**
-	 * @brief Constructs a graph with vertices from 0 to d-1 and no edges.
+	 * @brief The edges of the graph.
 	 *
-	 * @param d The number of vertices/dimensionality of the dataset.
+	 * For each edge, the first dimension ID is less than the second dimension ID.
 	 */
-	Graph(dim_t d);
+	std::vector<std::pair<dim_t, dim_t>> edges;
+
+	/**
+	 * @brief Constructor to initialize the graph by moving in the given adjacency list and extracting the edges.
+	 *
+	 * @param adj The adjacency list of the graph (rvalue reference).
+	 */
+	Graph(std::vector<std::vector<dim_t>>&& adj);
 };
 
 } // namespace npq

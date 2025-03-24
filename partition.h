@@ -75,7 +75,19 @@ struct Partition
  *
  * @return The computed joint partition.
  */
-Partition JointPartition(const Partition& p, const Partition& q);
+Partition jointPartition(const Partition& p, const Partition& q);
+
+
+/**
+ * @brief Compute the joint partition of a non-empty subset of a list of partitions indentified by a set of indices.
+ *
+ * @param partitions The list of partitions.
+ * @param indices The set of indices identifying the partitions to include in the joint. The set must be non-empty.
+ * Default value is {-1}, which indicates that the joint partition should include all partitions in the list.
+ * 
+ * @return The computed joint partition.
+ */
+Partition jointPartitionByIndices(const std::vector<Partition>& partitions, const std::vector<dim_t>& indices = { -1 });
 
 
 /**
@@ -89,7 +101,7 @@ Partition JointPartition(const Partition& p, const Partition& q);
  *
  * @return The computed entropy (or exponentiated entropy if exp is true).
  */
-double Entropy(const Partition& p, bool exp = false);
+double entropy(const Partition& p, bool exp = false);
 
 
 // TODO: Add optimized composite functions after everything else works
@@ -98,7 +110,7 @@ double Entropy(const Partition& p, bool exp = false);
  * @brief Compute the entropy of the joint partition of two partitions.
  *
  * This function calculates the empirical entropy of the joint partition of the two given partitions of vectors.
- * It should return the same result as Entropy(JointPartition(p, q)), but more efficiently by not storing the
+ * It should return the same result as entropy(jointPartition(p, q)), but more efficiently by not storing the
  * intermediate joint partition. It can also optionally return the exponential of the entropy.
  *
  * @param p The first given partition.

@@ -48,6 +48,15 @@
     <ClCompile Include="mst.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="step__compute_subspace_decomp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="subspace_decomposition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="greedy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="partition.h">
@@ -75,6 +84,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mst.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="subspace_decomposition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="greedy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

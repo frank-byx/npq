@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graph.h"
+#include "dataset.h"
 
 
 namespace npq
@@ -22,7 +22,7 @@ using Edge = std::tuple<const double, const dim_t, const dim_t>;
  * @param d The number of vertices in the graph (equal to the dimensionality of the dataset).
  * @return The edges in the MST of the graph, sorted in non-decreasing order of edge weights.
  */
-std::vector<Edge> KruskalMST(std::vector<Edge>& edges, dim_t d);
+std::vector<Edge> kruskalMST(std::vector<Edge>& edges, dim_t d);
 
 /**
  * @brief Computes a degree-constrained approximation of the given Minimum Spanning Tree (MST).
@@ -36,8 +36,9 @@ std::vector<Edge> KruskalMST(std::vector<Edge>& edges, dim_t d);
  * Proceedings of the Twenty-Fifth Annual ACM Symposium on Theory of Computing (STOC '93), 438–447.
  * Association for Computing Machinery. https://doi.org/10.1145/167088.167209
  *
- * @param mst The MST of a graph, which this function modifies into a degree-constrained approximation of itself.
+ * @param mstAdj The MST of a graph, represented by an adjacency list, which this function modifies
+ * into a degree-constrained approximation of its original value.
  */
-void RaviDCMST(Graph& mst, dim_t maxDegree);
+void raviDCMST(std::vector<std::vector<dim_t>>& mstAdj, dim_t maxDegree);
 
 } // namespace npq

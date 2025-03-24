@@ -80,7 +80,7 @@ TEST(PartitionFunctionsTest, JointPartition_match)
 {
     Partition p{ { 0, 1, 0 }, { { 0, 2 }, { 1 } } };
     Partition q{ { 1, 0, 1 }, { { 1 }, { 2, 0 } } };
-    Partition joint = JointPartition(p, q);
+    Partition joint = jointPartition(p, q);
 
     // Check that the blockIdToVecIds maps are equivalent using the overridden equality operator
 	// Note that the vecIdToBlockId map does not affect the equality check, so we omit it in the following construction
@@ -93,7 +93,7 @@ TEST(PartitionFunctionsTest, JointPartition_match)
 TEST(PartitionFunctionsTest, JointPartition_contain) {
 	Partition p{ { 0, 0, 0 }, { { 0, 1, 2 } } };
 	Partition q{ { 1, 0, 1 }, { { 1 }, { 0, 2 } } };
-    Partition joint = JointPartition(p, q);
+    Partition joint = jointPartition(p, q);
 
 	Partition expected{ {}, { { 1 }, { 0, 2 } } };
 	EXPECT_EQ(joint, expected);
@@ -103,7 +103,7 @@ TEST(PartitionFunctionsTest, JointPartition_contain) {
 TEST(PartitionFunctionsTest, JointPartition_straddle) {
 	Partition p{ { 0, 1, 0 }, { { 0, 2 }, { 1 } } };
 	Partition q{ { 0, 1, 1 }, { { 0 }, { 2, 1 } } };
-    Partition joint = JointPartition(p, q);
+    Partition joint = jointPartition(p, q);
 
 	Partition expected{ {}, { { 0 }, { 1 }, { 2 } } };
     EXPECT_EQ(joint, expected);
@@ -114,7 +114,7 @@ TEST(PartitionFunctionsTest, JointPartition_empty)
 {
     Partition p{ {}, {} };
     Partition q{ {}, {} };
-    Partition joint = JointPartition(p, q);
+    Partition joint = jointPartition(p, q);
 
     Partition expected{ {}, {} };
     EXPECT_EQ(joint, expected);
@@ -123,8 +123,8 @@ TEST(PartitionFunctionsTest, JointPartition_empty)
 
 TEST(PartitionFunctionsTest, Entropy_empty) {
     Partition p{ {}, {} };
-    double entropy = Entropy(p);
-    double expEntropy = Entropy(p, true);
+    double entropy = entropy(p);
+    double expEntropy = entropy(p, true);
 
     double expectedEntropy = 0.0;
     double expectedExpEntropy = 1.0;
@@ -134,8 +134,8 @@ TEST(PartitionFunctionsTest, Entropy_empty) {
 
 TEST(PartitionFunctionsTest, Entropy_single) {
     Partition p{ { 0, 0, 0 }, { { 0, 1, 2 } } };
-    double entropy = Entropy(p);
-    double expEntropy = Entropy(p, true);
+    double entropy = entropy(p);
+    double expEntropy = entropy(p, true);
 
     double expectedEntropy = 0.0;
     double expectedExpEntropy = 1.0;
@@ -144,8 +144,8 @@ TEST(PartitionFunctionsTest, Entropy_single) {
 }
 TEST(PartitionFunctionsTest, Entropy_even) {
     Partition p{ { 0, 1, 2 }, { { 0 }, { 1 }, { 2 } } };
-    double entropy = Entropy(p);
-    double expEntropy = Entropy(p, true);
+    double entropy = entropy(p);
+    double expEntropy = entropy(p, true);
 
     double expectedEntropy = log2(3.0);
     double expectedExpEntropy = 3.0;
@@ -155,8 +155,8 @@ TEST(PartitionFunctionsTest, Entropy_even) {
 
 TEST(PartitionFunctionsTest, Entropy_uneven) {
     Partition p{ { 0, 1, 0 }, { { 0, 2 }, { 1 } } };
-    double entropy = Entropy(p);
-    double expEntropy = Entropy(p, true);
+    double entropy = entropy(p);
+    double expEntropy = entropy(p, true);
 
     double expectedEntropy = -2.0 / 3.0 * log2(2.0 / 3.0) - 1.0 / 3.0 * log2(1.0 / 3.0);
     double expectedExpEntropy = exp2(expectedEntropy);
@@ -166,8 +166,8 @@ TEST(PartitionFunctionsTest, Entropy_uneven) {
 
 TEST(PartitionFunctionsTest, Entropy_even_2) {
     Partition p{ { 0, 1, 0, 1 }, { { 0, 2 }, { 1, 3 } } };
-    double entropy = Entropy(p);
-    double expEntropy = Entropy(p, true);
+    double entropy = entropy(p);
+    double expEntropy = entropy(p, true);
 
     double expectedEntropy = 1.0;
     double expectedExpEntropy = 2.0;

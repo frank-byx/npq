@@ -30,7 +30,7 @@ namespace npq
 	}
 
 
-	void InitializeDPState(DPState& state, const std::vector<float>& data)
+	void initializeDPState(DPState& state, const std::vector<float>& data)
 	{
 		// Store a pointer to the data
 		state.pData = &data;
@@ -63,7 +63,7 @@ namespace npq
 		}
 	}
 
-	void DoDPIteration(DPState& state)
+	void doDPIteration(DPState& state)
 	{
 		/******************************************************************************************
 		N: number of points
@@ -111,12 +111,12 @@ namespace npq
 		state.lastTwoRows[0].swap(state.lastTwoRows[1]);
 	}
 
-	Partition ComputePartitionFromDPState(DPState& state)
+	Partition computePartitionFromDPState(DPState& state)
 	{
 		// Do regularized 1D k-means
 		const id_t n = state.pData->size();
 		double lambda = state.lastTwoRows[0][n - 1] - state.lastTwoRows[1][n - 1];
-		std::vector<id_t> path = ComputeRegularized1DKMeans(lambda, state.cc, n);
+		std::vector<id_t> path = computeRegularized1DKMeans(lambda, state.cc, n);
 
 		// Convert the output path of leftmost elements into a Partition object
 		const id_t k = path.size();
@@ -137,12 +137,12 @@ namespace npq
 		return partition;
 	}
 
-	double ComputeEntropyFromDPState(DPState& state)
+	double computeEntropyFromDPState(DPState& state)
 	{
 		// Do regularized 1D k-means
 		const id_t n = state.pData->size();
 		double lambda = state.lastTwoRows[0][n - 1] - state.lastTwoRows[1][n - 1];
-		std::vector<id_t> path = ComputeRegularized1DKMeans(lambda, state.cc, n);
+		std::vector<id_t> path = computeRegularized1DKMeans(lambda, state.cc, n);
 
 		// Compute the entropy of the partition directly from the output path
 		double acc = 0.0;

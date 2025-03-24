@@ -11,7 +11,7 @@
 namespace npq
 {
 
-	std::vector<Partition> Compute1dPartitions(const Dataset& dataset, const Parameters& params)
+	std::vector<Partition> compute1dPartitions(const Dataset& dataset, const Parameters& params)
 	{
 		const dim_t d = dataset.dimensions.size();
 		std::vector<DPState> dpStates(d);
@@ -31,13 +31,13 @@ namespace npq
 		// For each dimension, initialize the DP state, do one iteration, and push to pq
 		for (dim_t i = 0; i < d; ++i)
 		{
-			InitializeDPState(dpStates[i], dataset.dimensions[i]);
-			DoDPIteration(dpStates[i]);
+			initializeDPState(dpStates[i], dataset.dimensions[i]);
+			doDPIteration(dpStates[i]);
 
 			const double cost = dpStates[i].lastTwoRows[0].back();
 			totalCost += cost;
 
-			const double entropy = ComputeEntropyFromDPState(dpStates[i]);
+			const double entropy = computeEntropyFromDPState(dpStates[i]);
 			pq.push({ entropy, i });
 		}
 
@@ -49,11 +49,11 @@ namespace npq
 			pq.pop();
 
 			const double oldCost = dpStates[i].lastTwoRows[0].back();
-			DoDPIteration(dpStates[i]);
+			doDPIteration(dpStates[i]);
 			const double newCost = dpStates[i].lastTwoRows[0].back();
 			totalCost -= oldCost - newCost;
 
-			const double entropy = ComputeEntropyFromDPState(dpStates[i]);
+			const double entropy = computeEntropyFromDPState(dpStates[i]);
 			pq.push({ entropy, i });
 		}
 
@@ -62,7 +62,7 @@ namespace npq
 		partitions.reserve(d);
 		for (dim_t i = 0; i < d; ++i)
 		{
-			partitions.emplace_back(ComputePartitionFromDPState(dpStates[i]));
+			partitions.emplace_back(computePartitionFromDPState(dpStates[i]));
 		}
 
 		return partitions;

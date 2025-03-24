@@ -1,3 +1,4 @@
+#include <cassert>
 #include <vector>
 #include <unordered_map>
 #include <cmath>
@@ -42,7 +43,7 @@ bool Partition::operator==(const Partition& other) const
 }
 
 
-Partition JointPartition(const Partition& p, const Partition& q)
+Partition jointPartition(const Partition& p, const Partition& q)
 {
     // Compute the cartesian product of partition p and partition q:
 
@@ -95,7 +96,39 @@ Partition JointPartition(const Partition& p, const Partition& q)
 }
 
 
-double Entropy(const Partition& p, bool exp)
+Partition jointPartitionByIndices(const std::vector<Partition>& partitions, const std::vector<dim_t>& indices)
+{
+	assert(!indices.empty());
+
+	if (indices[0] == -1 && indices.size() == 1)
+	{
+        // Include all partitions in the joint
+        Partition joint{ partitions[0] };
+		for (dim_t index = 1; index < partitions.size(); ++index)
+		{
+			joint = jointPartition(joint, partitions[index]);
+		}
+
+        return joint;
+	}
+    else
+    {
+        // Include only the specified partitions in the joint
+        Partition joint{ partitions[indices[0]] };
+        for (size_t i = 1; i < indices.size(); ++i)
+		{
+            const dim_t index = indices[i];
+			assert(index >= 0 && index < partitions.size());
+
+			joint = jointPartition(joint, partitions[index]);
+		}
+
+        return joint;
+    }
+}
+
+
+double entropy(const Partition& p, bool exp)
 {
     const id_t numVecs = p.vecIdToBlockId.size();
     double acc;

@@ -129,6 +129,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="1d_kmeans.cpp" />
+    <ClCompile Include="greedy.cpp" />
+    <ClCompile Include="step__compute_subspace_decomp.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="mst.cpp" />
     <ClCompile Include="regularized_1d_kmeans.cpp" />
@@ -141,17 +143,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="step__compute_vimst.cpp" />
+    <ClCompile Include="subspace_decomposition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="1d_kmeans.h" />
     <ClInclude Include="algorithm_steps.h" />
     <ClInclude Include="dataset.h" />
     <ClInclude Include="graph.h" />
+    <ClInclude Include="greedy.h" />
     <ClInclude Include="mst.h" />
     <ClInclude Include="regularized_1d_kmeans.h" />
     <ClInclude Include="smawk.h" />
     <ClInclude Include="parameters.h" />
     <ClInclude Include="partition.h" />
+    <ClInclude Include="subspace_decomposition.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
