@@ -9,7 +9,7 @@ namespace npq
 /**
  * @brief Represents an edge of a weighted graph, where the vertex set is the set of dimensions.
  */
-using Edge = std::tuple<const double, const dim_t, const dim_t>;
+using Edge = std::tuple<double, dim_t, dim_t>;
 
 /**
  * @brief Computes the Minimum Spanning Tree (MST) of the given graph.

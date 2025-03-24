@@ -20,6 +20,30 @@ bool MergeOperation::operator<(const MergeOperation& other) const
 	return changeInTotalCost < other.changeInTotalCost;
 }
 
+MergeOperation::MergeOperation(double changeInTotalCost, const std::pair<dim_t, dim_t>& edge, Partition&& newPartition, double newCost)
+	: changeInTotalCost(changeInTotalCost),
+	edge(edge),
+	newPartition(std::move(newPartition)),
+	newCost(newCost)
+{}
+
+MergeOperation::MergeOperation(MergeOperation&& other) noexcept
+	: changeInTotalCost(other.changeInTotalCost),
+	edge(std::move(other.edge)),
+	newPartition(std::move(other.newPartition)),
+	newCost(other.newCost)
+{}
+
+MergeOperation& MergeOperation::operator=(MergeOperation&& other) noexcept
+{
+	changeInTotalCost = other.changeInTotalCost;
+	edge = std::move(other.edge);
+	newPartition = std::move(other.newPartition);
+	newCost = other.newCost;
+
+	return *this;
+}
+
 GreedyMerger::GreedyMerger(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions)
 	: pDecomp(&decomp), pTree(&tree), pPartitions(&partitions)
 {

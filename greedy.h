@@ -52,7 +52,7 @@ struct MergeOperation
 	 * 
 	 * The first dimension ID is less than the second dimension ID.
 	 */
-	const std::pair<const dim_t, const dim_t> edge;
+	std::pair<dim_t, dim_t> edge;
 
 	/**
 	 * @brief The joint partition of the resulting subspace.
@@ -70,6 +70,31 @@ struct MergeOperation
 	 * @param other The other MergeOperation to compare to.
 	 */
 	bool operator<(const MergeOperation& other) const;
+
+	/**
+	 * @brief Constructor to initialize the merge operation with the given change in total cost, edge, partition, and cost.
+	 * 
+	 * @param changeInTotalCost The change in total cost of the decomposition if the merge is performed.
+	 * @param edge The edge in the tree over the dimensions corresponding to the merge.
+	 * @param newPartition The joint partition of the resulting subspace.
+	 * @param newCost The cost of the resulting subspace.
+	 */
+	MergeOperation(double changeInTotalCost, const std::pair<dim_t, dim_t>& edge, Partition&& newPartition, double newCost);
+
+	/**
+	 * @brief Move constructor.
+	 * 
+	 * @param other The other MergeOperation to move from.
+	 */
+	MergeOperation(MergeOperation&& other) noexcept;
+
+	/**
+	 * @brief Move assignment operator.
+	 * 
+	 * @param other The other MergeOperation to move from.
+	 * @return The current MergeOperation object after moving.
+	 */
+	MergeOperation& operator=(MergeOperation&& other) noexcept;
 };
 
 /**

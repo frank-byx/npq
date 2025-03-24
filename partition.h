@@ -60,6 +60,34 @@ struct Partition
 	 *         sets of sets are identical), otherwise returns false.
 	 */
 	bool operator==(const Partition& other) const;
+
+	/**
+	 * @brief Move constructor.
+	 * 
+	 * @param other The other Partition to move from.
+	 */
+	Partition(Partition&&) noexcept;
+
+	/**
+	 * @brief Move assignment operator.
+	 * 
+	 * @param other The other Partition to move from.
+	 * @return The current Partition object after moving.
+	 */
+	Partition& operator=(Partition&&) noexcept;
+	
+	// Deleted copy constructor to enforce move semantics
+	Partition(const Partition&) = delete;
+
+	// Deleted copy assignment operator to enforce move semantics
+	Partition& operator=(const Partition&) = delete;
+
+	/**
+	 * @brief Explicit copy method, since the copy constructor and copy assignment operator are deleted.
+	 * 
+	 * @return A deep copy of the current Partition object.
+	 */
+	Partition copy() const;
 };
 
 

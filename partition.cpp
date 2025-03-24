@@ -16,11 +16,9 @@ Partition::Partition(id_t numVecs, id_t numBlocks)
     blockIdToVecIds.resize(numBlocks);
 }
 
-
 Partition::Partition(std::vector<id_t>&& vecIdToBlockId, std::vector<std::vector<id_t>>&& blockIdToVecIds)
     : vecIdToBlockId{ std::move(vecIdToBlockId) }, blockIdToVecIds{ std::move(blockIdToVecIds) }
 {}
-
 
 bool Partition::operator==(const Partition& other) const
 {
@@ -40,6 +38,34 @@ bool Partition::operator==(const Partition& other) const
     }
 
     return thisSet == otherSet;
+}
+
+Partition::Partition(Partition&& other) noexcept
+   : vecIdToBlockId{ std::move(other.vecIdToBlockId) }, blockIdToVecIds{ std::move(other.blockIdToVecIds) }
+{}
+
+Partition& Partition::operator=(Partition&& other) noexcept
+{
+    vecIdToBlockId = std::move(other.vecIdToBlockId);
+    blockIdToVecIds = std::move(other.blockIdToVecIds);
+
+    return *this;
+}
+
+Partition Partition::copy() const
+{
+	// Copy the vector vecIdToBlockId
+	std::vector<id_t> vecIdToBlockIdCopy{ vecIdToBlockId };
+
+	// Deep copy the vector of vectors blockIdToVecIds
+	std::vector<std::vector<id_t>> blockIdToVecIdsCopy;
+	blockIdToVecIdsCopy.reserve(blockIdToVecIds.size());
+	for (const auto& vecIds : blockIdToVecIds)
+	{
+		blockIdToVecIdsCopy.push_back(vecIds);
+	}
+
+	return Partition{ std::move(vecIdToBlockIdCopy), std::move(blockIdToVecIdsCopy) };
 }
 
 
@@ -103,7 +129,7 @@ Partition jointPartitionByIndices(const std::vector<Partition>& partitions, cons
 	if (indices[0] == -1 && indices.size() == 1)
 	{
         // Include all partitions in the joint
-        Partition joint{ partitions[0] };
+        Partition joint{ partitions[0].copy() };
 		for (dim_t index = 1; index < partitions.size(); ++index)
 		{
 			joint = jointPartition(joint, partitions[index]);
@@ -114,7 +140,7 @@ Partition jointPartitionByIndices(const std::vector<Partition>& partitions, cons
     else
     {
         // Include only the specified partitions in the joint
-        Partition joint{ partitions[indices[0]] };
+        Partition joint{ partitions[indices[0]].copy() };
         for (size_t i = 1; i < indices.size(); ++i)
 		{
             const dim_t index = indices[i];

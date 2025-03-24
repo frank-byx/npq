@@ -123,56 +123,56 @@ TEST(PartitionFunctionsTest, JointPartition_empty)
 
 TEST(PartitionFunctionsTest, Entropy_empty) {
     Partition p{ {}, {} };
-    double entropy = entropy(p);
-    double expEntropy = entropy(p, true);
+    double pEntropy = entropy(p);
+    double pExpEntropy = entropy(p, true);
 
     double expectedEntropy = 0.0;
     double expectedExpEntropy = 1.0;
-    EXPECT_NEAR(entropy, expectedEntropy, 1e-5);
-    EXPECT_NEAR(expEntropy, expectedExpEntropy, 1e-5);
+    EXPECT_NEAR(pEntropy, expectedEntropy, 1e-5);
+    EXPECT_NEAR(pExpEntropy, expectedExpEntropy, 1e-5);
 }
 
 TEST(PartitionFunctionsTest, Entropy_single) {
     Partition p{ { 0, 0, 0 }, { { 0, 1, 2 } } };
-    double entropy = entropy(p);
-    double expEntropy = entropy(p, true);
+    double pEntropy = entropy(p);
+    double pExpEntropy = entropy(p, true);
 
     double expectedEntropy = 0.0;
     double expectedExpEntropy = 1.0;
-    EXPECT_NEAR(entropy, expectedEntropy, 1e-5);
-    EXPECT_NEAR(expEntropy, expectedExpEntropy, 1e-5);
+    EXPECT_NEAR(pEntropy, expectedEntropy, 1e-5);
+    EXPECT_NEAR(pExpEntropy, expectedExpEntropy, 1e-5);
 }
 TEST(PartitionFunctionsTest, Entropy_even) {
     Partition p{ { 0, 1, 2 }, { { 0 }, { 1 }, { 2 } } };
-    double entropy = entropy(p);
-    double expEntropy = entropy(p, true);
+    double pEntropy = entropy(p);
+    double pExpEntropy = entropy(p, true);
 
     double expectedEntropy = log2(3.0);
     double expectedExpEntropy = 3.0;
-    EXPECT_NEAR(entropy, expectedEntropy, 1e-5);
-    EXPECT_NEAR(expEntropy, expectedExpEntropy, 1e-5);
+    EXPECT_NEAR(pEntropy, expectedEntropy, 1e-5);
+    EXPECT_NEAR(pExpEntropy, expectedExpEntropy, 1e-5);
 }
 
 TEST(PartitionFunctionsTest, Entropy_uneven) {
     Partition p{ { 0, 1, 0 }, { { 0, 2 }, { 1 } } };
-    double entropy = entropy(p);
-    double expEntropy = entropy(p, true);
+    double pEntropy = entropy(p);
+    double pExpEntropy = entropy(p, true);
 
     double expectedEntropy = -2.0 / 3.0 * log2(2.0 / 3.0) - 1.0 / 3.0 * log2(1.0 / 3.0);
     double expectedExpEntropy = exp2(expectedEntropy);
-    EXPECT_NEAR(entropy, expectedEntropy, 1e-5);
-    EXPECT_NEAR(expEntropy, expectedExpEntropy, 1e-5);
+    EXPECT_NEAR(pEntropy, expectedEntropy, 1e-5);
+    EXPECT_NEAR(pExpEntropy, expectedExpEntropy, 1e-5);
 }
 
 TEST(PartitionFunctionsTest, Entropy_even_2) {
     Partition p{ { 0, 1, 0, 1 }, { { 0, 2 }, { 1, 3 } } };
-    double entropy = entropy(p);
-    double expEntropy = entropy(p, true);
+    double pEntropy = entropy(p);
+    double pExpEntropy = entropy(p, true);
 
     double expectedEntropy = 1.0;
     double expectedExpEntropy = 2.0;
-    EXPECT_NEAR(entropy, expectedEntropy, 1e-5);
-    EXPECT_NEAR(expEntropy, expectedExpEntropy, 1e-5);
+    EXPECT_NEAR(pEntropy, expectedEntropy, 1e-5);
+    EXPECT_NEAR(pExpEntropy, expectedExpEntropy, 1e-5);
 }
 
 

@@ -17,11 +17,11 @@ Graph computeVIMST(const std::vector<Partition>& partitions, const Parameters& p
 	const dim_t d = partitions.size();
 
 	// Compute the entropy of the partition corresponding to each dimension
-	std::vector<double> entropy;
-	entropy.reserve(d);
+	std::vector<double> entropies;
+	entropies.reserve(d);
 	for (const Partition& p : partitions)
 	{
-		entropy.push_back(entropy(p));
+		entropies.push_back(entropy(p));
 	}
 
 	// Compute the Variation of Information (VI) between each pair of partitions/dimensions
@@ -32,7 +32,7 @@ Graph computeVIMST(const std::vector<Partition>& partitions, const Parameters& p
 		for (dim_t j = i + 1; j < d; ++j)
 		{
 			const double jointEntropy = entropy(jointPartition(partitions[i], partitions[j]));  // TODO: Implement JointEntropy
-			const double variationOfInformation = 2 * jointEntropy - entropy[i] - entropy[j];
+			const double variationOfInformation = 2 * jointEntropy - entropies[i] - entropies[j];
 
 			edges.push_back({ variationOfInformation, i, j });
 		}
