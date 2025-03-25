@@ -180,24 +180,14 @@ struct SplitOperation
 	std::vector<dim_t> dimIds2;
 
 	/**
-	 * @brief The joint partition of the first resulting subspace.
-	 */
-	Partition newPartition1;
-
-	/**
-	 * @brief The joint partition of the second resulting subspace.
-	 */
-	Partition newPartition2;
-
-	/**
 	 * @brief The cost of the first resulting subspace.
 	 */
-	double newCost1;
+	double newCost1;  // Currently unused (TODO)
 
 	/**
 	 * @brief The cost of the second resulting subspace.
 	 */
-	double newCost2;
+	double newCost2;  // Currently unused (TODO)
 
 	/**
 	 * @brief The less-than operator to be used by a min priority queue.
@@ -221,7 +211,6 @@ struct SplitOperation
 	SplitOperation(double changeInTotalCost,
 				   const std::pair<dim_t, dim_t>& edge,
 				   const std::vector<dim_t>& dimIds1, const std::vector<dim_t>& dimIds2,
-				   Partition&& newPartition1, Partition&& newPartition2,
 				   double newCost1, double newCost2);
 
 	/**
@@ -293,6 +282,13 @@ private:
 					 std::map<dim_t, std::vector<dim_t>>& complementDimIds,
 					 const std::map<dim_t, Partition>& subtreeJointPartitions,
 					 const std::map<dim_t, std::vector<dim_t>>& subtreeDimIds);
+
+	/**
+	 * @brief Computes all splits of a subspace and adds them to the queue.
+	 * 
+	 * Also sets the subspaceIdToCost map for the given subspace.
+	 */
+	void enqueueSubspace(dim_t subspaceId);
 
 	SubspaceDecomposition* const pDecomp;
 	const Graph* const pTree;

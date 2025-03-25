@@ -189,12 +189,10 @@ bool SplitOperation::operator<(const SplitOperation& other) const
 SplitOperation::SplitOperation(double changeInTotalCost,
 							   const std::pair<dim_t, dim_t>& edge,
 							   const std::vector<dim_t>& dimIds1, const std::vector<dim_t>& dimIds2,
-							   Partition&& newPartition1, Partition&& newPartition2,
 							   double newCost1, double newCost2)
 	: changeInTotalCost(changeInTotalCost),
 	  edge(edge),
 	  dimIds1(dimIds1), dimIds2(dimIds2),
-	  newPartition1(std::move(newPartition1)), newPartition2(std::move(newPartition2)),
 	  newCost1(newCost1), newCost2(newCost2)
 {}
 
@@ -202,7 +200,6 @@ SplitOperation::SplitOperation(SplitOperation && other) noexcept
     : changeInTotalCost(other.changeInTotalCost),
 	  edge(std::move(other.edge)),
 	  dimIds1(std::move(other.dimIds1)), dimIds2(std::move(other.dimIds2)),
-	  newPartition1(std::move(other.newPartition1)), newPartition2(std::move(other.newPartition2)),
 	  newCost1(other.newCost1), newCost2(other.newCost2)
 {}
 
@@ -212,8 +209,6 @@ SplitOperation& SplitOperation::operator=(SplitOperation && other) noexcept
 	edge = std::move(other.edge);
 	dimIds1 = std::move(other.dimIds1);
 	dimIds2 = std::move(other.dimIds2);
-	newPartition1 = std::move(other.newPartition1);
-	newPartition2 = std::move(other.newPartition2);
 	newCost1 = other.newCost1;
 	newCost2 = other.newCost2;
 
@@ -312,74 +307,146 @@ void GreedySplitter::preorderDFS(dim_t curDimId, dim_t parentDimId,
 	}
 }
 
+void GreedySplitter::enqueueSubspace(dim_t subspaceId)
+{
+	const id_t numVectors = pPartitions->front().vecIdToBlockId.size();
+
+	// Root the subgraph of the tree induced by the current subspace at any node/dimension,
+	// WLOG choosing the dimension that has the same ID as the subspace for convenience.
+	const dim_t rootDimId = subspaceId;
+
+	// Observe that each split of the subspace corresponds to removing one edge of the rooted tree,
+	// leaving two connected components: a rooted subtree, and the complement of the rooted subtree.
+
+	// First, do a postorder traversal of the rooted tree to compute the joint partition of each rooted subtree.
+	std::map<dim_t, Partition> subtreeJointPartitions;
+	std::map<dim_t, std::vector<dim_t>> subtreeDimIds;  // The dimensions in each subtree
+	std::map<dim_t, dim_t> childToParentDimId;  // Keep track of the parents to restore the edges later
+	postorderDFS(rootDimId, -1, subtreeJointPartitions, subtreeDimIds, childToParentDimId);
+	assert(subtreeDimIds.at(rootDimId) == pDecomp->getDimIds(subspaceId));
+	assert(subtreeJointPartitions.at(rootDimId) == jointPartitionByIndices(*pPartitions, pDecomp->getDimIds(subspaceId)));
+
+	// Then, do a preorder traversal of the rooted tree to compute the joint partitions of the complements.
+	// We use the postorder traversal results to avoid recomputing the joint partitions of the subtrees.
+	std::map<dim_t, Partition> complementJointPartitions;
+	std::map<dim_t, std::vector<dim_t>> complementDimIds;
+	preorderDFS(rootDimId, -1, complementJointPartitions, complementDimIds, subtreeJointPartitions, subtreeDimIds);
+
+	// Compute the cost of the subspace
+	// TODO: Avoid recomputing the cost of the subspace after the first time this function is called in the constructor
+	const double expEntropy = entropy(subtreeJointPartitions.at(rootDimId), true);
+	subspaceIdToCost[subspaceId] = subspaceCost(expEntropy, subtreeDimIds.at(rootDimId).size(), numVectors);
+
+	// Populate the split queue with each pair of rooted subtree and complement
+	for (const auto& [childDimId, parentDimId] : childToParentDimId)
+	{
+		assert(childDimId != rootDimId);
+
+		const double subtreeExpEntropy = entropy(subtreeJointPartitions[childDimId], true);
+		const dim_t subtreeDims = subtreeDimIds[childDimId].size();
+		const double subtreeCost = subspaceCost(subtreeExpEntropy, subtreeDims, numVectors);
+
+		const double complementExpEntropy = entropy(complementJointPartitions[childDimId], true);
+		const dim_t complementDims = complementDimIds[childDimId].size();
+		const double complementCost = subspaceCost(complementExpEntropy, complementDims, numVectors);
+
+		const double changeInTotalCost = subtreeCost + complementCost - subspaceIdToCost[subspaceId];
+
+		// The edge that we are splitting on is the edge from the child to the parent
+		// It doesn't matter if the first dimension ID of the edge is smaller for now (TODO)
+		const std::pair<dim_t, dim_t> edge{ childDimId, parentDimId };
+
+		splitQueue.emplace_back(
+			SplitOperation{
+				changeInTotalCost,
+				edge,
+				subtreeDimIds[childDimId],
+				complementDimIds[childDimId],
+				subtreeCost,
+				complementCost
+			}
+		);
+	}
+}
+
 GreedySplitter::GreedySplitter(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions)
 	: pDecomp(&decomp), pTree(&tree), pPartitions(&partitions)
 {
-	const id_t numVectors = partitions[0].vecIdToBlockId.size();
-
 	for (const dim_t& subspaceId : decomp.allSubspaceIds())
 	{
-		// Root the subgraph of the tree induced by the current subspace at any node/dimension,
-		// WLOG choosing the dimension that has the same ID as the subspace for convenience.
-		const dim_t rootDimId = subspaceId;
-
-		// Observe that each split of the subspace corresponds to removing one edge of the rooted tree,
-		// leaving two connected components: a rooted subtree, and the complement of the rooted subtree.
-
-		// First, do a postorder traversal of the rooted tree to compute the joint partition of each rooted subtree.
-		std::map<dim_t, Partition> subtreeJointPartitions;
-		std::map<dim_t, std::vector<dim_t>> subtreeDimIds;  // The dimensions in each subtree
-		std::map<dim_t, dim_t> childToParentDimId;  // Keep track of the parents to restore the edges later
-		postorderDFS(rootDimId, -1, subtreeJointPartitions, subtreeDimIds, childToParentDimId);
-		assert(subtreeDimIds.at(rootDimId) == decomp.getDimIds(subspaceId));
-		assert(subtreeJointPartitions.at(rootDimId) == jointPartitionByIndices(partitions, decomp.getDimIds(subspaceId)));
-
-		// Then, do a preorder traversal of the rooted tree to compute the joint partitions of the complements.
-		// We use the postorder traversal results to avoid recomputing the joint partitions of the subtrees.
-		std::map<dim_t, Partition> complementJointPartitions;
-		std::map<dim_t, std::vector<dim_t>> complementDimIds;
-		preorderDFS(rootDimId, -1, complementJointPartitions, complementDimIds, subtreeJointPartitions, subtreeDimIds);
-
-		// Compute the cost of the subspace
-		const double expEntropy = entropy(subtreeJointPartitions.at(rootDimId), true);
-		subspaceIdToCost[subspaceId] = subspaceCost(expEntropy, subtreeDimIds.at(rootDimId).size(), numVectors);
-
-		// Populate the split queue with each pair of rooted subtree and complement
-		for (const auto& [childDimId, parentDimId] : childToParentDimId)
-		{
-			assert(childDimId != rootDimId);
-
-			const double subtreeExpEntropy = entropy(subtreeJointPartitions[childDimId], true);
-			const dim_t subtreeDims = subtreeDimIds[childDimId].size();
-			const double subtreeCost = subspaceCost(subtreeExpEntropy, subtreeDims, numVectors);
-
-			const double complementExpEntropy = entropy(complementJointPartitions[childDimId], true);
-			const dim_t complementDims = complementDimIds[childDimId].size();
-			const double complementCost = subspaceCost(complementExpEntropy, complementDims, numVectors);
-
-			const double changeInTotalCost = subtreeCost + complementCost - subspaceIdToCost[subspaceId];
-
-			// The edge that we are splitting on is the edge from the child to the parent
-			const std::pair<dim_t, dim_t> edge{ childDimId, parentDimId };
-
-			splitQueue.emplace_back(
-				SplitOperation{
-					changeInTotalCost,
-					edge,
-					subtreeDimIds[childDimId],
-					complementDimIds[childDimId],
-					std::move(subtreeJointPartitions[childDimId]),
-					std::move(complementJointPartitions[childDimId]),
-					subtreeCost,
-					complementCost
-				}
-			);
-		}
+		// Add all splits of the subspace to the queue and update the subspaceIdToCost map
+		enqueueSubspace(subspaceId);
 	}
 
 	// Set loss of 0-th iteration to the total cost of the decomposition
 	losses.push_back(std::accumulate(subspaceIdToCost.begin(), subspaceIdToCost.end(),
 									 0.0, [](double sum, const auto& pair) { return sum + pair.second; }));
+}
+
+bool GreedySplitter::canSplit() const
+{
+	if (splitQueue.empty())
+	{
+		return false;
+	}
+
+	const SplitOperation& bestSplit = *std::min_element(splitQueue.begin(), splitQueue.end());
+	return bestSplit.changeInTotalCost < 0.0;
+}
+
+void GreedySplitter::doSplit()
+{
+	// For sanity check:
+	const dim_t splitQueueSizeBefore = splitQueue.size();
+
+	// Get the best split operation from the queue
+	assert(canSplit());
+	std::vector<SplitOperation>::iterator bestSplitIt = std::min_element(splitQueue.begin(), splitQueue.end());
+	SplitOperation bestSplit = std::move(*bestSplitIt);
+	splitQueue.erase(bestSplitIt);
+
+	// Lookup the subspace
+	const dim_t subspaceId = pDecomp->getSubspaceId(bestSplit.edge.first);
+	assert(subspaceId == pDecomp->getSubspaceId(bestSplit.edge.second));
+
+	// Clean up the old subspace from the cost map
+	subspaceIdToCost.erase(subspaceId);
+
+	// Remove all of the now invalidated splits of the subspace from queue
+	// TODO: Some partitions in the queue can be reused to save time, but for now we just remove them all
+	auto it = splitQueue.begin();
+	while (it != splitQueue.end())
+	{
+		if (pDecomp->inSameSubspace(it->edge.first, subspaceId))
+		{
+			assert(pDecomp->inSameSubspace(it->edge.second, subspaceId));
+			it = splitQueue.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	// Do the split
+	assert(pDecomp->inSameSubspace(bestSplit.edge.first, bestSplit.edge.second));
+	pDecomp->split(bestSplit.dimIds1, bestSplit.dimIds2);
+	assert(!pDecomp->inSameSubspace(bestSplit.edge.first, bestSplit.edge.second));
+
+	// For each of the two new subspaces, add all splits to the queue and update the cost map
+	enqueueSubspace(pDecomp->getSubspaceId(bestSplit.edge.first));
+	enqueueSubspace(pDecomp->getSubspaceId(bestSplit.edge.second));
+
+	// Record the loss of the current iteration
+	losses.push_back(losses.back() + bestSplit.changeInTotalCost);
+
+	// Sanity check
+	assert(splitQueue.size() == splitQueueSizeBefore - 1);
+}
+
+std::vector<double> GreedySplitter::getLosses() const
+{
+	return losses;
 }
 
 } // namespace npq
