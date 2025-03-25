@@ -177,7 +177,7 @@ void kmeans_wilber::wilber() {
 }
 
 
-std::vector<npq::id_t> computeRegularized1DKMeans(double lambda, const npq::CostCalculator& cc, npq::id_t n)
+std::vector<npq::id_t> npq::computeRegularized1DKMeans(double lambda, const npq::CostCalculator& cc, npq::id_t n)
 {
     kmeans_wilber kw{ lambda, cc, n };
     kw.wilber();

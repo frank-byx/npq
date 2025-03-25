@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="npq.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="partition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

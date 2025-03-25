@@ -10,6 +10,9 @@
 #include "1d_kmeans.h"
 
 
+namespace npq
+{
+
 /*
  * @brief Computes the optimal 1D regularized k-means clustering.
  * 
@@ -24,4 +27,6 @@
  * @return A list of k indices of the sorted data, each the leftmost element of one of k clusters, from left to right.
  * I.e., the clusters are intervals: [ret[0], ret[1]-1], [ret[1], ret[2]-1], ..., [ret[k-1], n-1], where ret[0] = 0.
  */
-std::vector<npq::id_t> computeRegularized1DKMeans(double lambda, const npq::CostCalculator& cc, npq::id_t n);
+std::vector<id_t> computeRegularized1DKMeans(double lambda, const CostCalculator& cc, id_t n);
+
+} // namespace npq
