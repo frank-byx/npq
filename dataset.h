@@ -51,7 +51,7 @@ struct Dataset {
 	 * @param n The number of vectors in the dataset.
 	 * @param d The dimensionality of each vector.
 	 */
-	Dataset(scalar_t* data, id_t n, dim_t d);
+	Dataset(const scalar_t* data, id_t n, dim_t d);
 };
 
 } // namespace npq

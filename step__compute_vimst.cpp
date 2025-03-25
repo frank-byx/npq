@@ -3,6 +3,7 @@
  */
 
 #include <algorithm>
+#include <cassert>
 
 #include "algorithm_steps.h"
 #include "partition.h"
@@ -57,11 +58,20 @@ Graph computeVIMST(const std::vector<Partition>& partitions, const Parameters& p
 	
 	// Compute a degree-constrained approximation of the MST
 	dim_t maxDegree = params.mstMaxDegree;
-	if (maxDegree == -1)
+	if (maxDegree != -1)
 	{
-		maxDegree = static_cast<dim_t>(ceil(log2(d)));
+		if (maxDegree == 0)
+		{
+			maxDegree = static_cast<dim_t>(ceil(log2(d)));
+			if (maxDegree < 2)
+			{
+				maxDegree = 2;
+			}
+		}
+		assert(maxDegree >= 2);
+		
+		raviDCMST(mstAdj, maxDegree);
 	}
-	raviDCMST(mstAdj, maxDegree);
 
 	return Graph(std::move(mstAdj));
 }

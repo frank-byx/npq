@@ -21,9 +21,10 @@ struct Parameters
 	/**
 	 * @brief The margin of error within which NPQ maintains the quantization distortion as an approximate invaraiant.
 	 *
-	 * This margin is a small positive value that is subtracted from the target distortion to get the target total mean
-	 * squared error for the separate 1D k-means clustering/partitioning of dimensions. This is done to ensure that the
-	 * final optimal quantization computed by NPQ will achieve the target distortion with high probability.
+	 * This margin is a small fractional value in [0, 1) that is subtracted from 1 and then multiplied by the target
+	 * quantization distortion to get the target total mean squared error for the 1D k-means clustering step. This is
+	 * to ensure that the final quantization computed by NPQ will achieve the target distortion with high probability.
+	 * For example, if this is set to 0.02, the target MSE used by the algorithm will be 0.98 * targetDistortion.
 	 * 
 	 * The default value is 0.
 	 */
@@ -31,13 +32,14 @@ struct Parameters
 
 	/**
 	 * @brief The maximum degree of each vertex in the degree-constrained approximation of the Minimum Spanning Tree (MST)
-	 * used in the second step of the algorithm.
+	 * used in the second step of the algorithm. The runtime complexity of the algorithm is linear in this parameter.
 	 *
-	 * The default value is ceil(log2(d)), where d is the number of dimensions in the dataset.
+	 * The default value of 0 indicates to use max(2, ceil(log2(d))), where d is the number of dimensions in the dataset.
+	 * A value of -1 indicates to not constrain the maximum degree of the MST, effectively setting the maximum to d-1.
 	 */
 	dim_t mstMaxDegree;
 
-	Parameters(double targetDistortion, double targetDistortionMargin = 0.0, dim_t mstMaxDegree = -1);
+	Parameters(double targetDistortion, double targetDistortionMargin = 0.0, dim_t mstMaxDegree = 0);
 };
 
 } // namespace npq

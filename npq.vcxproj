@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="1d_kmeans.cpp" />
     <ClCompile Include="greedy.cpp" />
+    <ClCompile Include="natural_product_quantization.cpp" />
     <ClCompile Include="step__compute_codebook.cpp" />
     <ClCompile Include="step__compute_subspace_decomp.cpp" />
     <ClCompile Include="graph.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="graph.h" />
     <ClInclude Include="greedy.h" />
     <ClInclude Include="mst.h" />
+    <ClInclude Include="natural_product_quantization.h" />
     <ClInclude Include="regularized_1d_kmeans.h" />
     <ClInclude Include="smawk.h" />
     <ClInclude Include="parameters.h" />

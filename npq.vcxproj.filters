@@ -60,6 +60,9 @@
     <ClCompile Include="step__compute_codebook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="natural_product_quantization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="partition.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="codebook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="natural_product_quantization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

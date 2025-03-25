@@ -4,7 +4,7 @@
 namespace npq
 {
 
-Dataset::Dataset(scalar_t* data, id_t n, dim_t d) {
+Dataset::Dataset(const scalar_t* data, id_t n, dim_t d) {
 	// Allocate memory
 	dimensions.resize(d);
 	for (dim_t dimId = 0; dimId < d; ++dimId) {
