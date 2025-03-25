@@ -57,6 +57,9 @@
     <ClCompile Include="greedy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="step__compute_codebook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="partition.h">
@@ -90,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="greedy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="codebook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

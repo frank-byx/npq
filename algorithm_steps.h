@@ -7,6 +7,7 @@
 #include "parameters.h"
 #include "graph.h"
 #include "subspace_decomposition.h"
+#include "codebook.h"
 
 
 namespace npq
@@ -54,10 +55,28 @@ Graph computeVIMST(const std::vector<Partition>& partitions, const Parameters& p
  * 
  * @return The most optimal subspace decomposition found by the greedy algorithm.
  */
-SubspaceDecomposition computeSubspaceDecomposition(
-	const std::vector<Partition>& partitions,
-	const Graph& tree,
-	const Parameters& params
-);
+SubspaceDecomposition computeSubspaceDecomposition(const std::vector<Partition>& partitions,
+												   const Graph& tree,
+												   const Parameters& params);
+
+/**
+ * @brief The fourth step of the algorithm.
+ *
+ * Computes a codebook approximately achieving the target quantization distortion for the given subspace decomposition.
+ * 
+ * TODO: For now, we will just return an unrefined approximation of the codebooks, which are only good as
+ * initializations for LLoyd's algorithm. In the future, Lloyd's algorithm will be implemented here.
+ *
+ * @param decomp The subspace decomposition for which to compute the codebook.
+ * @param partitions The 1D partitions of the dataset.
+ * @param dataset The processed dataset.
+ * @param params Dictionary of input parameters.
+ *
+ * @return A codebook corresponding to the given subspace decomposition.
+ */
+Codebook computeCodebook(const SubspaceDecomposition& decomp,
+						 const std::vector<Partition>& partitions,
+						 const Dataset& dataset,
+						 const Parameters& params);
 
 } // namespace npq

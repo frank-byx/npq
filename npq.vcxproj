@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="1d_kmeans.cpp" />
     <ClCompile Include="greedy.cpp" />
+    <ClCompile Include="step__compute_codebook.cpp" />
     <ClCompile Include="step__compute_subspace_decomp.cpp" />
     <ClCompile Include="graph.cpp" />
     <ClCompile Include="mst.cpp" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="1d_kmeans.h" />
     <ClInclude Include="algorithm_steps.h" />
+    <ClInclude Include="codebook.h" />
     <ClInclude Include="dataset.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="greedy.h" />
