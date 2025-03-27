@@ -32,6 +32,7 @@ doNaturalProductQuantization(const float* data, int n, short d,
  * @param n The number of vectors in the dataset.
  * @param d The dimensionality of each vector.
  * @param targetDistortion The target quantization distortion to achieve (see parameters.h).
- * @return The output subspace decomposition as a list of sets of dimensions.
+ * @return The output subspace decomposition as a list of sets of dimensions,
+ *         along with the recommended number of codewords for each subspace.
  */
-std::vector<std::vector<short>> doNaiveNPQ(const float* data, int n, short d, double targetDistortion);
+std::vector<std::pair<std::vector<short>, int>> doNaiveNPQ(const float* data, int n, short d, double targetDistortion);

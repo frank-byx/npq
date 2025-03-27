@@ -30,7 +30,7 @@ doNaturalProductQuantization(const float* data, int n, short d, double targetDis
 	return _doNaturalProductQuantization(data, n, d, targetDistortion, targetDistortionMargin, mstMaxDegree);
 }
 
-std::vector<std::vector<short>> doNaiveNPQ(const float* data, int n, short d, double targetDistortion)
+std::vector<std::pair<std::vector<short>, int>> doNaiveNPQ(const float* data, int n, short d, double targetDistortion)
 {
 	const Dataset dataset{ data, n, d };
 

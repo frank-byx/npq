@@ -310,7 +310,7 @@ double subspaceCost(double expEntropy, dim_t subspaceDims, id_t numVectors)
 // Merge operation (changeInTotalCost, (subspaceId1, subspaceId2)), where subspaceId1 < subspaceId2
 using MergeOp = std::pair<double, std::pair<dim_t, dim_t>>;
 
-std::vector<std::vector<dim_t>> naiveNPQ(const Dataset& dataset, double targetDistortion)
+std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset, double targetDistortion)
 {
     std::cout << "Running naiveNPQ." << std::endl;
 
@@ -478,10 +478,11 @@ std::vector<std::vector<dim_t>> naiveNPQ(const Dataset& dataset, double targetDi
     std::sort(subspaceIds.begin(), subspaceIds.end());
     subspaceIds.erase(std::unique(subspaceIds.begin(), subspaceIds.end()), subspaceIds.end());
 
-	std::vector<std::vector<dim_t>> subspaces;
-	subspaces.reserve(subspaceIds.size());
+    std::vector<std::pair<std::vector<dim_t>, id_t>> result;
+    result.reserve(subspaceIds.size());
 	for (const dim_t& subspaceId : subspaceIds)
 	{
+		// Get the dimensions of the subspace
 		std::vector<dim_t> dimIds;
 		for (dim_t dimId = 0; dimId < numDims; ++dimId)
 		{
@@ -490,10 +491,18 @@ std::vector<std::vector<dim_t>> naiveNPQ(const Dataset& dataset, double targetDi
 				dimIds.push_back(dimId);
 			}
 		}
-		subspaces.push_back(std::move(dimIds));
+
+		// Calculate the recommended number of codewords for the subspace (same as in the main algorithm)
+        id_t numCodewords = 1 << static_cast<int>(ceil(entropy(subspaceIdToJointPartition[subspaceId], false)));
+        if (numCodewords > subspaceIdToJointPartition[subspaceId].blockIdToVecIds.size())
+        {
+            numCodewords = static_cast<id_t>(subspaceIdToJointPartition[subspaceId].blockIdToVecIds.size());
+        }
+
+		result.emplace_back(std::move(dimIds), numCodewords);
 	}
 
-    return subspaces;
+    return result;
 }
 
 } // namespace npq
