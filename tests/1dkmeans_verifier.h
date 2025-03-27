@@ -7,8 +7,8 @@
 
 #pragma once
 
-//#include <faiss/Index.h>
 #include <functional>
+
 
 namespace faiss {
 

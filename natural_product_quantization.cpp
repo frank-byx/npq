@@ -1,5 +1,6 @@
 #include "natural_product_quantization.h"
 #include "algorithm_steps.h"
+#include "naive_npq.h"
 
 
 using namespace npq;
@@ -27,4 +28,11 @@ std::vector<std::pair<std::vector<short>, std::vector<std::vector<float>>>>
 doNaturalProductQuantization(const float* data, int n, short d, double targetDistortion, double targetDistortionMargin, short mstMaxDegree)
 {
 	return _doNaturalProductQuantization(data, n, d, targetDistortion, targetDistortionMargin, mstMaxDegree);
+}
+
+std::vector<std::vector<short>> doNaiveNPQ(const float* data, int n, short d, double targetDistortion)
+{
+	const Dataset dataset{ data, n, d };
+
+	return naiveNPQ(dataset, targetDistortion);
 }

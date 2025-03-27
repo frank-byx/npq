@@ -16,9 +16,8 @@
 #include <unordered_map>
 #include <vector>
 
-//#include <faiss/Index.h>
-//#include <faiss/impl/FaissAssert.h>
 #include "1dkmeans_verifier.h"
+
 
 namespace faiss {
 

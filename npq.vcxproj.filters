@@ -60,6 +60,9 @@
     <ClCompile Include="natural_product_quantization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="naive_npq.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="partition.h">
@@ -99,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="natural_product_quantization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="naive_npq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

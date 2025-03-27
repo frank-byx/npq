@@ -23,3 +23,15 @@
 std::vector<std::pair<std::vector<short>, std::vector<std::vector<float>>>>
 doNaturalProductQuantization(const float* data, int n, short d,
 							 double targetDistortion, double targetDistortionMargin = 0.0, short mstMaxDegree = 0);
+
+
+/**
+ * @brief The main function of an alternative simplified algorithm for testing and experimentation purposes.
+ * 
+ * @param data The input vector dataset, stored in row-major order (i.e. concatenated vectors, see dataset.h).
+ * @param n The number of vectors in the dataset.
+ * @param d The dimensionality of each vector.
+ * @param targetDistortion The target quantization distortion to achieve (see parameters.h).
+ * @return The output subspace decomposition as a list of sets of dimensions.
+ */
+std::vector<std::vector<short>> doNaiveNPQ(const float* data, int n, short d, double targetDistortion);
