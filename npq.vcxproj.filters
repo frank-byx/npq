@@ -63,6 +63,9 @@
     <ClCompile Include="naive_npq.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="npq.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="partition.h">

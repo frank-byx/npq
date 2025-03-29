@@ -5,7 +5,7 @@
 #include "dataset.h"
 
 
-namespace npq
+namespace nnpq
 {
 
 /**
@@ -19,6 +19,6 @@ namespace npq
  * @return The subspace decomposition computed by the algorithm, as a list of sets of dimensions,
  *         along with the recommended number of codewords for each subspace.
  */
-std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset, double targetDistortion);
+std::vector<std::pair<std::vector<npq::dim_t>, npq::id_t>> naiveNPQ(const npq::Dataset& dataset, double targetDistortion);
 
 } // namespace npq

@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -132,6 +132,7 @@
     <ClCompile Include="greedy.cpp" />
     <ClCompile Include="naive_npq.cpp" />
     <ClCompile Include="natural_product_quantization.cpp" />
+    <ClCompile Include="npq.cpp" />
     <ClCompile Include="step__compute_codebook.cpp" />
     <ClCompile Include="step__compute_subspace_decomp.cpp" />
     <ClCompile Include="graph.cpp" />

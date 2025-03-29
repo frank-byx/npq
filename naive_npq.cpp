@@ -15,7 +15,9 @@
 #include "partition.h"
 
 
-namespace npq
+using namespace npq;
+
+namespace nnpq
 {
 
 // The code in the following section is adapted from code from the FAISS repository licensed under the MIT license.

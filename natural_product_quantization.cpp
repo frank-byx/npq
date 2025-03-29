@@ -34,5 +34,5 @@ std::vector<std::pair<std::vector<short>, int>> doNaiveNPQ(const float* data, in
 {
 	const Dataset dataset{ data, n, d };
 
-	return naiveNPQ(dataset, targetDistortion);
+	return nnpq::naiveNPQ(dataset, targetDistortion);
 }
