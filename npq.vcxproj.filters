@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Files">
+      <UniqueIdentifier>{66d89410-3b18-4075-bdcb-a63a5d692925}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="partition.cpp">
@@ -113,5 +116,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="data.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="data2.csv">
+      <Filter>Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

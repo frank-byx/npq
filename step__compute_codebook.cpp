@@ -44,15 +44,15 @@ Codebook computeCodebook(const SubspaceDecomposition& decomp,
 
 			for (const id_t& vecId : clusters[i])
 			{
-				for (dim_t i = 0; i < dimIds.size(); ++i)
+				for (dim_t j = 0; j < dimIds.size(); ++j)
 				{
-					codeword[i] += dataset.dimensions[dimIds[i]][vecId];
+					codeword[j] += dataset.dimensions[dimIds[j]][vecId];
 				}
 			}
 
-			for (dim_t i = 0; i < dimIds.size(); ++i)
+			for (dim_t j = 0; j < dimIds.size(); ++j)
 			{
-				codeword[i] /= clusters[i].size();
+				codeword[j] /= clusters[i].size();
 			}
 
 			codewords.push_back(std::move(codeword));

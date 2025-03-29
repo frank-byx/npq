@@ -3,6 +3,8 @@
 #include <numeric>
 #include <set>
 
+#include <iostream>
+
 #include "subspace_decomposition.h"
 
 
@@ -86,7 +88,7 @@ bool SubspaceDecomposition::isValidSplit(const std::vector<dim_t>& dimIds1, cons
 	assert(oldSubspaceSet.size() == oldSubspace.size());
 		
 	const std::set<dim_t> dimIds1Set(dimIds1.begin(), dimIds1.end());
-	const std::set<dim_t> dimIds2Set(dimIds1.begin(), dimIds1.end());
+	const std::set<dim_t> dimIds2Set(dimIds2.begin(), dimIds2.end());
 	if (dimIds1Set.size() != dimIds1.size() || dimIds2Set.size() != dimIds2.size())
 	{
 		return false;

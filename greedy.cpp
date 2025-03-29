@@ -5,7 +5,6 @@
 
 #include "greedy.h"
 
-
 namespace npq
 {
 
@@ -307,6 +306,14 @@ void GreedySplitter::preorderDFS(dim_t curDimId, dim_t parentDimId,
 	}
 }
 
+bool compareSets(const std::vector<dim_t>& a, const std::vector<dim_t>& b)
+{
+	auto a_set = std::set<dim_t>(a.begin(), a.end());
+	auto b_set = std::set<dim_t>(b.begin(),b.end());
+
+	return a_set == b_set;
+}
+
 void GreedySplitter::enqueueSubspace(dim_t subspaceId)
 {
 	const id_t numVectors = pPartitions->front().vecIdToBlockId.size();
@@ -323,7 +330,8 @@ void GreedySplitter::enqueueSubspace(dim_t subspaceId)
 	std::map<dim_t, std::vector<dim_t>> subtreeDimIds;  // The dimensions in each subtree
 	std::map<dim_t, dim_t> childToParentDimId;  // Keep track of the parents to restore the edges later
 	postorderDFS(rootDimId, -1, subtreeJointPartitions, subtreeDimIds, childToParentDimId);
-	assert(subtreeDimIds.at(rootDimId) == pDecomp->getDimIds(subspaceId));
+	
+	assert(compareSets(subtreeDimIds.at(rootDimId), pDecomp->getDimIds(subspaceId)));
 	assert(subtreeJointPartitions.at(rootDimId) == jointPartitionByIndices(*pPartitions, pDecomp->getDimIds(subspaceId)));
 
 	// Then, do a preorder traversal of the rooted tree to compute the joint partitions of the complements.
@@ -340,6 +348,7 @@ void GreedySplitter::enqueueSubspace(dim_t subspaceId)
 	// Populate the split queue with each pair of rooted subtree and complement
 	for (const auto& [childDimId, parentDimId] : childToParentDimId)
 	{
+		assert(pDecomp->inSameSubspace(childDimId, parentDimId));
 		assert(childDimId != rootDimId);
 
 		const double subtreeExpEntropy = entropy(subtreeJointPartitions[childDimId], true);
@@ -419,7 +428,7 @@ void GreedySplitter::doSplit()
 	{
 		if (pDecomp->inSameSubspace(it->edge.first, subspaceId))
 		{
-			assert(pDecomp->inSameSubspace(it->edge.second, subspaceId));
+			assert(it->edge.second == subspaceId || pDecomp->inSameSubspace(it->edge.second, subspaceId));
 			it = splitQueue.erase(it);
 		}
 		else
