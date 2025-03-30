@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <limits>
 #include <numeric>
 
 #include "1d_kmeans.h"
@@ -116,6 +117,7 @@ namespace npq
 		// Do regularized 1D k-means
 		const id_t n = state.pData->size();
 		double lambda = state.lastTwoRows[0][n - 1] - state.lastTwoRows[1][n - 1];
+		lambda += std::numeric_limits<scalar_t>::epsilon();  // Add epsilon to avoid issue with duplicate values
 		std::vector<id_t> path = computeRegularized1DKMeans(lambda, state.cc, n);
 
 		// Convert the output path of leftmost elements into a Partition object
