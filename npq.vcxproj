@@ -165,8 +165,10 @@
     <ClInclude Include="subspace_decomposition.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="data.csv" />
-    <None Include="data2.csv" />
+    <None Include="data_one.csv" />
+    <None Include="data_random.csv" />
+    <None Include="data_repeat.csv" />
+    <None Include="data_sift.csv" />
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -116,10 +116,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
-    <None Include="data.csv">
+    <None Include="data_one.csv">
       <Filter>Files</Filter>
     </None>
-    <None Include="data2.csv">
+    <None Include="data_random.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="data_repeat.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="data_sift.csv">
       <Filter>Files</Filter>
     </None>
   </ItemGroup>

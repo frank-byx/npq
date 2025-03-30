@@ -9,98 +9,75 @@
 #include <sstream>
 
 using namespace std;
-using namespace filesystem;
+
+void printnpqResults(const vector<pair<vector<short>, vector<vector<float>>>>& results, ostream& os) {
+	for (size_t i = 0; i < results.size(); i++) {
+		os << "Subspace " << i << ":\n";
+		os << "Dimensions: ";
+		for (const auto& dim : results[i].first) {
+			os << dim << " ";
+		}
+		os << "\n";
+		for (const auto& vec : results[i].second) {
+			for (const auto& val : vec) {
+				os << val << " ";
+			}
+			os << "\n";
+		}
+	}
+}
+
+void printnnpqResults(const vector<pair<vector<short>, int>>& results, ostream& os) {
+	for (int i = 0; i < results.size(); i++)
+	{
+		os << "Subspace " << i << ":\n";
+		os << "Dimensions: ";
+		for (int j = 0; j < results[i].first.size(); j++)
+		{
+			os << results[i].first[j] << " ";
+		}
+		os << "\n";
+		os << "Number of codewords: " << results[i].second << "\n";
+	}
+}
 
 int main()
 {
-	ifstream file("data3.csv");
+	ifstream file("data_sift.csv");
 	string line;
-	getline(file, line);
-	stringstream ss (line);
-	vector<string> data_s = {};
-	while (getline(ss, line, ','))
-	{
-		data_s.push_back(line);
-	}
 	vector<float> data_f = {};
-	// convert string to float
-	for (int i = 0; i < data_s.size(); i++)
+	bool first = false;
+	int n = 0;
+	int d = 0;
+	while (getline(file, line))
 	{
-		data_f.push_back(stof(data_s[i]));
+		stringstream ss(line);
+		while (getline(ss, line, ','))
+		{
+			if (!first)
+			{
+				d++;
+			}
+			data_f.push_back(stof(line));
+		}
+		first = true;
+		n++;
 	}
+	cout << "Data size: " << data_f.size() << "\n";
+	cout << "Number of vectors: " << n << "\n";
+	cout << "Dimensionality: " << d << "\n";
 	file.close();
 
-	auto results = doNaturalProductQuantization(data_f.data(), 100, 10, 500, 0.0, -1);
+	auto results = doNaturalProductQuantization(data_f.data(), n, d, 40000, 0.0, -1);
+	printnpqResults(results, cout);
+	ofstream outputs("output_npq.txt");
+	printnpqResults(results, outputs);
 
-	for (int i = 0; i < results.size(); i++)
-	{
-		cout << "Subspace " << i << ":\n";
-		cout << "Dimensions: ";
-		for (int j = 0; j < results[i].first.size(); j++)
-		{
-			cout << results[i].first[j] << " ";
-		}
-		cout << "\n";
-		for (int j = 0; j < results[i].second.size(); j++)
-		{
-			for (int k = 0; k < results[i].second[j].size(); k++)
-			{
-				cout << results[i].second[j][k] << " ";
-			}
-			cout << "\n";
-		}
-	}
+	auto result = doNaiveNPQ(data_f.data(), n, d, 40000);
+	printnnpqResults(result, cout);
+	ofstream output("output_nnpq.txt");
+	printnnpqResults(result, output);
 
-	// write to text file
-
-	ofstream output("output.txt");
-	for (int i = 0; i < results.size(); i++)
-	{
-		output << "Subspace " << i << ":\n";
-		output << "Dimensions: ";
-		for (int j = 0; j < results[i].first.size(); j++)
-		{
-			output << results[i].first[j] << " ";
-		}
-		output << "\n";
-		for (int j = 0; j < results[i].second.size(); j++)
-		{
-			for (int k = 0; k < results[i].second[j].size(); k++)
-			{
-				output << results[i].second[j][k] << " ";
-			}
-			cout << "\n";
-		}
-	}
-
-	auto result = doNaiveNPQ(data_f.data(), 100, 10, 500);
-
-	for (int i = 0; i < result.size(); i++)
-	{
-		cout << "Subspace " << i << ":\n";
-		cout << "Dimensions: ";
-		for (int j = 0; j < result[i].first.size(); j++)
-		{
-			cout << result[i].first[j] << " ";
-		}
-		cout << "\n";
-		cout << "Number of codewords: " << result[i].second << "\n";
-	}
-
-	// write to text file
-	ofstream output2("output2.txt");
-
-	for (int i = 0; i < result.size(); i++)
-	{
-		output2 << "Subspace " << i << ":\n";
-		output2 << "Dimensions: ";
-		for (int j = 0; j < result[i].first.size(); j++)
-		{
-			output2 << result[i].first[j] << " ";
-		}
-		output2 << "\n";
-		output2 << "Number of codewords: " << result[i].second << "\n";
-	}
 
 	return 0;
 }
