@@ -18,7 +18,8 @@ namespace npq
 		dpStates.resize(d);
 
 		// TODO: Update to use normalized target distortion
-		const double maxCost = params.targetDistortion * (1.0 - params.targetDistortionMargin);
+		const id_t n = dataset.dimensions[0].size();
+		const double maxCost = params.targetDistortion * (1.0 - params.targetDistortionMargin) * n;
 		double totalCost = 0.0;
 
 		// Create a priority queue of dimensions by lowest entropy of

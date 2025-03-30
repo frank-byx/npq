@@ -322,7 +322,7 @@ std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset
 
     std::cout << "Computing 1D partitions." << std::endl;
 
-	const double target1dError = targetDistortion / numDims;  // Balance the MSE of each 1D partition
+	const double target1dError = targetDistortion / numDims * numVectors;  // Balance the MSE of each 1D partition
 	std::vector<Partition> partitions;
 	partitions.reserve(numDims);
     for (dim_t i = 0; i < numDims; ++i)
