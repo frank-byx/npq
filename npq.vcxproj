@@ -169,6 +169,7 @@
     <None Include="data_random.csv" />
     <None Include="data_repeat.csv" />
     <None Include="data_sift.csv" />
+    <None Include="data_sift_65k.csv" />
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

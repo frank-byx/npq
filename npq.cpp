@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void printnpqResults(const vector<pair<vector<short>, vector<vector<float>>>>& results, ostream& os) {
+static void printnpqResults(const vector<pair<vector<short>, vector<vector<float>>>>& results, ostream& os) {
 	for (size_t i = 0; i < results.size(); i++) {
 		os << "Subspace " << i << ":\n";
 		os << "Dimensions: ";
@@ -27,7 +27,7 @@ void printnpqResults(const vector<pair<vector<short>, vector<vector<float>>>>& r
 	}
 }
 
-void printnnpqResults(const vector<pair<vector<short>, int>>& results, ostream& os) {
+static void printnnpqResults(const vector<pair<vector<short>, int>>& results, ostream& os) {
 	for (int i = 0; i < results.size(); i++)
 	{
 		os << "Subspace " << i << ":\n";
@@ -43,7 +43,7 @@ void printnnpqResults(const vector<pair<vector<short>, int>>& results, ostream& 
 
 int main()
 {
-	ifstream file("data_sift.csv");
+	ifstream file("data_sift_65k.csv");
 	string line;
 	vector<float> data_f = {};
 	bool first = false;
@@ -68,10 +68,10 @@ int main()
 	cout << "Dimensionality: " << d << "\n";
 	file.close();
 
-	auto results = doNaturalProductQuantization(data_f.data(), n, d, 40000, 0.0, -1);
-	printnpqResults(results, cout);
-	ofstream outputs("output_npq.txt");
-	printnpqResults(results, outputs);
+	//auto results = doNaturalProductQuantization(data_f.data(), n, d, 40000, 0.0, -1);
+	//printnpqResults(results, cout);
+	//ofstream outputs("output_npq.txt");
+	//printnpqResults(results, outputs);
 
 	auto result = doNaiveNPQ(data_f.data(), n, d, 40000);
 	printnnpqResults(result, cout);
