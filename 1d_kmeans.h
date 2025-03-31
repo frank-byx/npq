@@ -76,11 +76,18 @@ namespace npq
 		CostCalculator cc;
 
 		/**
-		 * @brief The last two filled rows of the DP matrix D at any given iteration.
+		 * @brief The last two computed rows of the DP matrix D at any given iteration.
 		 *
 		 * The row at index 0 is the second-last row, and the row at index 1 is the last row.
 		 */
 		std::array<std::vector<float>, 2> lastTwoRows;
+
+		/**
+		 * @brief The current number of clusters (in the optimal partition corresponding to the second-last-computed row of D).
+		 * 
+		 * This is equal to the index (in D) of the second-last row plus one, or equivalently the index of the last-computed row.
+		 */
+		id_t numClusters;
 	};
 
 
@@ -109,14 +116,5 @@ namespace npq
 	 * @param state The current DP state object.
 	 */
 	Partition computePartitionFromDPState(DPState& state);
-
-	/**
-	 * @brief Computes the entropy of the corresponding optimal clustering/paritition.
-	 *
-	 * This is equivalent to calling entropy(computePartitionFromDPState(state)), but is more efficient.
-	 *
-	 * @param state The current DP state object.
-	 */
-	double computeEntropyFromDPState(DPState& state);
 
 } // namespace npq

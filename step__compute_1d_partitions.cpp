@@ -3,6 +3,7 @@
  */
 
 #include <cassert>
+#include <cmath>
 #include <queue>
 
 #include "algorithm_steps.h"
@@ -14,50 +15,72 @@ namespace npq
 
 	std::vector<Partition> compute1dPartitions(const Dataset& dataset, const Parameters& params)
 	{
+		// Subspace storage cost function simplified for the case of a single dimension
+		auto subspaceStorageCost1d = [&params](id_t numClusters) {
+			const double scalarSize = sizeof(scalar_t) * 8;
+			return params.trueNumVectors * log2(numClusters) + numClusters * scalarSize;
+		};
+
 		const dim_t d = dataset.dimensions.size();
 		std::vector<DPState> dpStates;
 		dpStates.resize(d);
 
 		// TODO: Update to use normalized target distortion
 		const id_t n = dataset.dimensions[0].size();
-		const double maxCost = params.targetDistortion * (1.0 - params.targetDistortionMargin) * n;
-		double totalCost = 0.0;
+		const double targetTotalSquaredError = params.targetDistortion * (1.0 - params.targetDistortionMargin) * n;
+		double totalSquaredError = 0.0;
 
-		// Create a priority queue of dimensions by lowest (most negative) change in cost (total squared error)
+		// Create a priority queue of dimensions by highest efficiency, where efficiency of a dimension
+		// is defined as the decrease in total squared error divided by the increase in storage cost
+		// from adding a cluster to that dimension
 		std::priority_queue<
 			std::pair<double, dim_t>,
-			std::vector<std::pair<double, dim_t>>,
-			std::greater<std::pair<double, dim_t>>
+			std::vector<std::pair<double, dim_t>>
 		> pq;
 
-		// For each dimension, initialize the DP state, do one iteration, and push to pq
+		// Initialization
 		for (dim_t i = 0; i < d; ++i)
 		{
+			// Initialize the DP state for dimension i and compute the initial total squared error
 			initializeDPState(dpStates[i], dataset.dimensions[i]);
-			doDPIteration(dpStates[i]);
+			totalSquaredError += dpStates[i].lastTwoRows[0].back();
 
-			const double cost = dpStates[i].lastTwoRows[0].back();
-			totalCost += cost;
+			// Compute the efficiency of adding a cluster to dimension i and push to the priority queue
+			const double decreaseInTotalSquaredError = dpStates[i].lastTwoRows[0].back() - dpStates[i].lastTwoRows[1].back();
+			assert(decreaseInTotalSquaredError >= 0.0);
 
-			const double changeInCost = dpStates[i].lastTwoRows[1].back() - dpStates[i].lastTwoRows[0].back();
-			assert(changeInCost <= 0.0);
-			pq.push({ changeInCost, i });
+			const double k = dpStates[i].numClusters;
+			assert(k == 1);
+			const double increaseInStorageCost = subspaceStorageCost1d(k + 1) - subspaceStorageCost1d(k);
+			assert(increaseInStorageCost > 0.0);
+
+			const double efficiency = decreaseInTotalSquaredError / increaseInStorageCost;
+			pq.push({ efficiency, i });
 		}
 
-		// While the total cost is above the maximum allowed cost, add a cluster to a dimension,
-		// greedily choosing the receiving dimension to be the one such that the total cost is reduced the most
-		while (totalCost > maxCost)
+		// While the total squared error is above the target, greedily add a cluster to the most efficient dimension
+		while (totalSquaredError > targetTotalSquaredError)
 		{
-			const double curChangeInCost = pq.top().first;
+			// Pop the most efficient dimension from the priority queue
 			const dim_t i = pq.top().second;
 			pq.pop();
 
+			// Add a cluster to dimension i and update the total squared error
+			const double oldSquaredError = dpStates[i].lastTwoRows[0].back();
 			doDPIteration(dpStates[i]);
-			totalCost += curChangeInCost;
+			const double newSquaredError = dpStates[i].lastTwoRows[0].back();
+			totalSquaredError -= oldSquaredError - newSquaredError;
 
-			const double newChangeInCost = dpStates[i].lastTwoRows[1].back() - dpStates[i].lastTwoRows[0].back();
-			assert(newChangeInCost <= 0.0);
-			pq.push({ newChangeInCost, i });
+			// Compute the efficiency of adding another cluster to dimension i and push back to the priority queue
+			const double decreaseInTotalSquaredError = dpStates[i].lastTwoRows[0].back() - dpStates[i].lastTwoRows[1].back();
+			assert(decreaseInTotalSquaredError >= 0.0);
+
+			const double k = dpStates[i].numClusters;
+			const double increaseInStorageCost = subspaceStorageCost1d(k + 1) - subspaceStorageCost1d(k);
+			assert(increaseInStorageCost > 0.0);
+
+			const double efficiency = decreaseInTotalSquaredError / increaseInStorageCost;
+			pq.push({ efficiency, i });
 		}
 
 		// Create the final partitions from the DP states
