@@ -2,6 +2,7 @@
  * @brief The first step of the algorithm. See algorithm_steps.h for more information.
  */
 
+#include <cassert>
 #include <queue>
 
 #include "algorithm_steps.h"
@@ -22,8 +23,7 @@ namespace npq
 		const double maxCost = params.targetDistortion * (1.0 - params.targetDistortionMargin) * n;
 		double totalCost = 0.0;
 
-		// Create a priority queue of dimensions by lowest entropy of
-		// the optimal clustering corresponding to its current DP table)
+		// Create a priority queue of dimensions by lowest (most negative) change in cost (total squared error)
 		std::priority_queue<
 			std::pair<double, dim_t>,
 			std::vector<std::pair<double, dim_t>>,
@@ -39,24 +39,25 @@ namespace npq
 			const double cost = dpStates[i].lastTwoRows[0].back();
 			totalCost += cost;
 
-			const double entropy = computeEntropyFromDPState(dpStates[i]);
-			pq.push({ entropy, i });
+			const double changeInCost = dpStates[i].lastTwoRows[1].back() - dpStates[i].lastTwoRows[0].back();
+			assert(changeInCost <= 0.0);
+			pq.push({ changeInCost, i });
 		}
 
-		// While the total cost is above the maximum allowed cost,
-		// pop the dimension with the lowest entropy and do an iteration of DP
+		// While the total cost is above the maximum allowed cost, add a cluster to a dimension,
+		// greedily choosing the receiving dimension to be the one such that the total cost is reduced the most
 		while (totalCost > maxCost)
 		{
+			const double curChangeInCost = pq.top().first;
 			const dim_t i = pq.top().second;
 			pq.pop();
 
-			const double oldCost = dpStates[i].lastTwoRows[0].back();
 			doDPIteration(dpStates[i]);
-			const double newCost = dpStates[i].lastTwoRows[0].back();
-			totalCost -= oldCost - newCost;
+			totalCost += curChangeInCost;
 
-			const double entropy = computeEntropyFromDPState(dpStates[i]);
-			pq.push({ entropy, i });
+			const double newChangeInCost = dpStates[i].lastTwoRows[1].back() - dpStates[i].lastTwoRows[0].back();
+			assert(newChangeInCost <= 0.0);
+			pq.push({ newChangeInCost, i });
 		}
 
 		// Create the final partitions from the DP states
