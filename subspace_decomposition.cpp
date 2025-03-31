@@ -10,7 +10,10 @@
 
 namespace npq
 {
-	
+
+SubspaceDecomposition::SubspaceDecomposition(std::vector<dim_t>&& dimIdToSubspaceId)
+	: dimIdToSubspaceId(std::move(dimIdToSubspaceId)) {}
+
 SubspaceDecomposition::SubspaceDecomposition(dim_t numDims, bool initSingletons) : dimIdToSubspaceId(numDims, 0)
 {
 	if (initSingletons)

@@ -38,3 +38,17 @@ doNaturalProductQuantization(const float* data, int n, short d,
  *         along with the recommended number of codewords for each subspace.
  */
 std::vector<std::pair<std::vector<short>, int>> doNaiveNPQ(const float* data, int n, short d, int trueNumVectors, double targetDistortion);
+
+
+/**
+ * @brief Latest and greatest variation combining step 1 of the main algorithm with naive greedy merging.
+ *
+ * @param data The input vector dataset, stored in row-major order (i.e. concatenated vectors, see dataset.h).
+ * @param n The number of vectors in the subsampled dataset pointed to by 'data'.
+ * @param d The dimensionality of each vector.
+ * @param trueNumVectors The true number of vectors in the full dataset.
+ * @param targetDistortion The target quantization distortion to achieve (see parameters.h).
+ * @param targetDistortionMargin The margin of error within which NPQ achieves the target distortion (see parameters.h).
+ * @return The output codebook (and implicitly the subspace decomposition) of NPQ (see codebook.h).
+ */
+std::vector<std::pair<std::vector<short>, std::vector<std::vector<float>>>> doNotSoNaiveNPQ(const float* data, int n, short d, int trueNumVectors, double targetDistortion, double targetDistortionMargin = 0.0);

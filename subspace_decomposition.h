@@ -20,6 +20,13 @@ class SubspaceDecomposition
 {
 public:
 	/**
+	 * @brief Constructor from r-value reference to dimIdToSubspaceId.
+	 * 
+	 * @param dimIdToSubspaceId The mapping from dimension ID to subspace ID.
+	 */
+	SubspaceDecomposition(std::vector<dim_t>&& dimIdToSubspaceId);
+
+	/**
 	 * @brief Constructor that sets the number of dimensions and initializes the decomposition
 	 * to either singleton subspaces each containing one dimension, or a single subspace containing all dimensions.
 	 *
