@@ -3,6 +3,7 @@
 #include <map>
 
 #include "graph.h"
+#include "parameters.h"
 #include "partition.h"
 #include "subspace_decomposition.h"
 
@@ -20,7 +21,7 @@ namespace npq
  *
  * Estimated # of codewords:	k (= expEntropy)
  * # of dimensions in subspace:	d_sub (= subspaceDims)
- * # of vectors in dataset:		n (= numVectors)
+ * # of vectors in dataset:		n (= trueNumVectors)
  * Size of vector scalar type:	c (= sizeof(scalar_t))  (scalar_t is defined in dataset.h)
  *
  * Subvector storage memory:	A = n * log2(k)
@@ -33,8 +34,9 @@ namespace npq
  *
  * @param expEntropy The exponentiated joint entropy.
  * @param subspaceDims The number of dimensions in the subspace.
+ * @param trueNumVectors The true number of vectors in the dataset.
  */
-double subspaceCost(double expEntropy, dim_t subspaceDims, id_t numVectors);
+double subspaceCost(double expEntropy, dim_t subspaceDims, id_t trueNumVectors);
 
 
 /**
@@ -113,8 +115,9 @@ public:
 	 * @param decomp The subspace decomposition to be modified.
 	 * @param tree The tree over the dimensions of the dataset.
 	 * @param partitions The 1D partitions of the dataset.
+	 * @param params The parameters of the algorithm.
 	 */
-	GreedyMerger(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions);
+	GreedyMerger(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions, const Parameters& params);
 
 	/**
 	 * @brief Checks if there are any merges left to perform that decrease the total cost of the decomposition.
@@ -141,6 +144,7 @@ private:
 	SubspaceDecomposition* const pDecomp;
 	const Graph* const pTree;
 	const std::vector<Partition>* const pPartitions;
+	const id_t trueNumVectors;
 
 	std::map<dim_t, Partition> subspaceIdToJointPartition;
 	std::map<dim_t, double> subspaceIdToCost;
@@ -242,7 +246,7 @@ public:
 	 * @param tree The tree over the dimensions of the dataset.
 	 * @param partitions The 1D partitions of the dataset.
 	 */
-	GreedySplitter(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions);
+	GreedySplitter(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions, const Parameters& params);
 
 	/**
 	 * @brief Checks if there are any splits left to perform that decrease the total cost of the decomposition.
@@ -290,6 +294,7 @@ private:
 	 */
 	void enqueueSubspace(dim_t subspaceId);
 
+	const id_t trueNumVectors;
 	SubspaceDecomposition* const pDecomp;
 	const Graph* const pTree;
 	const std::vector<Partition>* const pPartitions;

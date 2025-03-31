@@ -9,6 +9,14 @@ namespace npq
 struct Parameters
 {
 	/**
+	 * @brief The true number of vectors in the dataset.
+	 *
+	 * The number of vectors in the full dataset, and not the number of vectors in the subsampled set that this
+	 * algorithm takes as input. This is used to compute the cost of a subspace during step 3 of the algorithm.
+	 */
+	id_t trueNumVectors;
+	
+	/**
 	 * @brief The target quantization distortion to achieve, set by the user.
 	 *
 	 * Quantization distortion is defined as the mean squared error of the quantized vectors from the original vectors.
@@ -39,7 +47,7 @@ struct Parameters
 	 */
 	dim_t mstMaxDegree;
 
-	Parameters(double targetDistortion, double targetDistortionMargin = 0.0, dim_t mstMaxDegree = 0);
+	Parameters(id_t trueNumVectors, double targetDistortion, double targetDistortionMargin = 0.0, dim_t mstMaxDegree = 0);
 };
 
 } // namespace npq

@@ -41,7 +41,7 @@ SubspaceDecomposition computeSubspaceDecomposition(
 
 		// Run greedy merger and splitter (in separate scopes to minimize peak memory usage)
 		{
-			GreedyMerger merger(decompToMerge, tree, partitions);
+			GreedyMerger merger(decompToMerge, tree, partitions, params);
 			didMerge = false;
 			while (merger.canMerge())
 			{
@@ -53,7 +53,7 @@ SubspaceDecomposition computeSubspaceDecomposition(
 			decompToMergeCost = mergerLosses.back();
 		}
 		{
-			GreedySplitter splitter(decompToSplit, tree, partitions);
+			GreedySplitter splitter(decompToSplit, tree, partitions, params);
 			didSplit = false;
 			while (splitter.canSplit())
 			{

@@ -303,16 +303,16 @@ std::vector<std::vector<id_t>> kmeans1d(const float* x, size_t n, double targetC
 // End of code adapted from the FAISS repository
 
 // This function is copied from greedy.cpp
-double subspaceCost(double expEntropy, dim_t subspaceDims, id_t numVectors)
+double subspaceCost(double expEntropy, dim_t subspaceDims, id_t trueNumVectors)
 {
     const double scalarSize = sizeof(scalar_t) * 8;
-    return numVectors * log2(expEntropy) + expEntropy * subspaceDims * scalarSize;
+    return trueNumVectors * log2(expEntropy) + expEntropy * subspaceDims * scalarSize;
 }
 
 // Merge operation (changeInTotalCost, (subspaceId1, subspaceId2)), where subspaceId1 < subspaceId2
 using MergeOp = std::pair<double, std::pair<dim_t, dim_t>>;
 
-std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset, double targetDistortion)
+std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset, id_t trueNumVectors, double targetDistortion)
 {
     std::cout << "Running naiveNPQ." << std::endl;
 
@@ -362,7 +362,7 @@ std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset
 	{
 		subspaceIdToJointPartition[subspaceId] = std::move(partitions[subspaceId]);
 		const double subspaceExpEntropy = entropy(subspaceIdToJointPartition[subspaceId], true);
-		subspaceIdToCost[subspaceId] = subspaceCost(subspaceExpEntropy, 1, numVectors);
+		subspaceIdToCost[subspaceId] = subspaceCost(subspaceExpEntropy, 1, trueNumVectors);
 	}
 
     // Populate the merge queue with all possible merges of pairs of dimensions
@@ -374,7 +374,7 @@ std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset
 		{
 			const double newExpEntropy = entropy(jointPartition(subspaceIdToJointPartition[subspaceId1],
 				                                                subspaceIdToJointPartition[subspaceId2]), true);
-			const double newCost = subspaceCost(newExpEntropy, 2, numVectors);
+			const double newCost = subspaceCost(newExpEntropy, 2, trueNumVectors);
 			const double changeInTotalCost = newCost - subspaceIdToCost[subspaceId1] - subspaceIdToCost[subspaceId2];
 
 			mergeQueue.emplace_back(MergeOp{ changeInTotalCost, { subspaceId1, subspaceId2 } });
@@ -432,7 +432,7 @@ std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset
 				++newSubspaceDims;
 			}
 		}
-		subspaceIdToCost[subspaceId1] = subspaceCost(newExpEntropy, newSubspaceDims, numVectors);
+		subspaceIdToCost[subspaceId1] = subspaceCost(newExpEntropy, newSubspaceDims, trueNumVectors);
 
 		// Remove merges in the queue that involve the second merged subspace
 		mergeQueue.erase(
@@ -465,7 +465,7 @@ std::vector<std::pair<std::vector<dim_t>, id_t>> naiveNPQ(const Dataset& dataset
                     ++opNumDims;
                 }
             }
-            const double opCost = subspaceCost(opExpEntropy, opNumDims, numVectors);
+            const double opCost = subspaceCost(opExpEntropy, opNumDims, trueNumVectors);
             op.first = opCost - subspaceIdToCost[op.second.first] - subspaceIdToCost[op.second.second];
         }
 

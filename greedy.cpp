@@ -5,13 +5,14 @@
 
 #include "greedy.h"
 
+
 namespace npq
 {
 
-double subspaceCost(double expEntropy, dim_t subspaceDims, id_t numVectors)
+double subspaceCost(double expEntropy, dim_t subspaceDims, id_t trueNumVectors)
 {
 	const double scalarSize = sizeof(scalar_t) * 8;
-	return numVectors * log2(expEntropy) + expEntropy * subspaceDims * scalarSize;
+	return trueNumVectors * log2(expEntropy) + expEntropy * subspaceDims * scalarSize;
 }
 
 
@@ -47,8 +48,8 @@ MergeOperation& MergeOperation::operator=(MergeOperation&& other) noexcept
 	return *this;
 }
 
-GreedyMerger::GreedyMerger(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions)
-	: pDecomp(&decomp), pTree(&tree), pPartitions(&partitions)
+GreedyMerger::GreedyMerger(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions, const Parameters& params)
+	: pDecomp(&decomp), pTree(&tree), pPartitions(&partitions), trueNumVectors(params.trueNumVectors)
 {
 	const id_t numVectors = partitions[0].vecIdToBlockId.size();
 
@@ -59,7 +60,7 @@ GreedyMerger::GreedyMerger(SubspaceDecomposition& decomp, const Graph& tree, con
 		subspaceIdToJointPartition[subspaceId] = jointPartitionByIndices(partitions, dimIds);
 
 		const double subspaceExpEntropy = entropy(subspaceIdToJointPartition[subspaceId], true);
-		subspaceIdToCost[subspaceId] = subspaceCost(subspaceExpEntropy, dimIds.size(), numVectors);
+		subspaceIdToCost[subspaceId] = subspaceCost(subspaceExpEntropy, dimIds.size(), trueNumVectors);
 	}
 
 	// Populate the merge queue with all possible merges, corresponding to edges between different subspaces
@@ -81,7 +82,7 @@ GreedyMerger::GreedyMerger(SubspaceDecomposition& decomp, const Graph& tree, con
 												subspaceIdToJointPartition[subspaceId2]);
 
 		const double newExpEntropy = entropy(newPartition, true);
-		const double newCost = subspaceCost(newExpEntropy, dimIds1.size() + dimIds2.size(), numVectors);
+		const double newCost = subspaceCost(newExpEntropy, dimIds1.size() + dimIds2.size(), trueNumVectors);
 		const double changeInTotalCost = newCost - subspaceIdToCost[subspaceId1] - subspaceIdToCost[subspaceId2];
 
 		// TODO: For now, we enqueue a merge even if the cost increases, to make updating the queue easier later on
@@ -161,7 +162,7 @@ void GreedyMerger::doMerge()
 												subspaceIdToJointPartition[subspaceId2]);
 
 		const double newExpEntropy = entropy(newPartition, true);
-		const double newCost = subspaceCost(newExpEntropy, dimIds1.size() + dimIds2.size(), numVectors);
+		const double newCost = subspaceCost(newExpEntropy, dimIds1.size() + dimIds2.size(), trueNumVectors);
 		const double changeInTotalCost = newCost - subspaceIdToCost[subspaceId1] - subspaceIdToCost[subspaceId2];
 
 		op.changeInTotalCost = changeInTotalCost;
@@ -343,7 +344,7 @@ void GreedySplitter::enqueueSubspace(dim_t subspaceId)
 	// Compute the cost of the subspace
 	// TODO: Avoid recomputing the cost of the subspace after the first time this function is called in the constructor
 	const double expEntropy = entropy(subtreeJointPartitions.at(rootDimId), true);
-	subspaceIdToCost[subspaceId] = subspaceCost(expEntropy, subtreeDimIds.at(rootDimId).size(), numVectors);
+	subspaceIdToCost[subspaceId] = subspaceCost(expEntropy, subtreeDimIds.at(rootDimId).size(), trueNumVectors);
 
 	// Populate the split queue with each pair of rooted subtree and complement
 	for (const auto& [childDimId, parentDimId] : childToParentDimId)
@@ -353,11 +354,11 @@ void GreedySplitter::enqueueSubspace(dim_t subspaceId)
 
 		const double subtreeExpEntropy = entropy(subtreeJointPartitions[childDimId], true);
 		const dim_t subtreeDims = subtreeDimIds[childDimId].size();
-		const double subtreeCost = subspaceCost(subtreeExpEntropy, subtreeDims, numVectors);
+		const double subtreeCost = subspaceCost(subtreeExpEntropy, subtreeDims, trueNumVectors);
 
 		const double complementExpEntropy = entropy(complementJointPartitions[childDimId], true);
 		const dim_t complementDims = complementDimIds[childDimId].size();
-		const double complementCost = subspaceCost(complementExpEntropy, complementDims, numVectors);
+		const double complementCost = subspaceCost(complementExpEntropy, complementDims, trueNumVectors);
 
 		const double changeInTotalCost = subtreeCost + complementCost - subspaceIdToCost[subspaceId];
 
@@ -378,8 +379,8 @@ void GreedySplitter::enqueueSubspace(dim_t subspaceId)
 	}
 }
 
-GreedySplitter::GreedySplitter(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions)
-	: pDecomp(&decomp), pTree(&tree), pPartitions(&partitions)
+GreedySplitter::GreedySplitter(SubspaceDecomposition& decomp, const Graph& tree, const std::vector<Partition>& partitions, const Parameters& params)
+	: pDecomp(&decomp), pTree(&tree), pPartitions(&partitions), trueNumVectors(params.trueNumVectors)
 {
 	for (const dim_t& subspaceId : decomp.allSubspaceIds())
 	{
