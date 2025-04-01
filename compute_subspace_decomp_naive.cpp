@@ -4,16 +4,17 @@
 #include <numeric>
 
 #include "compute_subspace_decomp_naive.h"
+#include "correction.h"
 
 
 namespace npq
 {
 
 // TODO: This function is copied from greedy.cpp
-double _subspaceCost(double expEntropy, dim_t subspaceDims, id_t trueNumVectors)
+double _subspaceCost(double numClusters, dim_t subspaceDims, id_t trueNumVectors)
 {
 	const double scalarSize = sizeof(scalar_t) * 8;
-	return trueNumVectors * log2(expEntropy) + expEntropy * subspaceDims * scalarSize;
+	return trueNumVectors * log2(numClusters) + numClusters * subspaceDims * scalarSize;
 }
 
 // Merge operation (changeInTotalCost, (subspaceId1, subspaceId2)), where subspaceId1 < subspaceId2
@@ -35,7 +36,8 @@ SubspaceDecomposition computeSubspaceDecompositionNaive(const std::vector<Partit
 	{
 		subspaceIdToJointPartition[subspaceId] = partitions[subspaceId].copy();
 		const double subspaceExpEntropy = entropy(subspaceIdToJointPartition[subspaceId], true);
-		subspaceIdToCost[subspaceId] = _subspaceCost(subspaceExpEntropy, 1, params.trueNumVectors);
+		const double subspaceNumClusters = estimateNumClusters(subspaceExpEntropy, { subspaceId }, params, partitions);
+		subspaceIdToCost[subspaceId] = _subspaceCost(subspaceNumClusters, 1, params.trueNumVectors);
 	}
 
 	// Populate the merge queue with all possible merges of pairs of dimensions
@@ -46,8 +48,9 @@ SubspaceDecomposition computeSubspaceDecompositionNaive(const std::vector<Partit
 		for (dim_t subspaceId2 = subspaceId1 + 1; subspaceId2 < numDims; ++subspaceId2)
 		{
 			const double newExpEntropy = entropy(jointPartition(subspaceIdToJointPartition[subspaceId1],
-				subspaceIdToJointPartition[subspaceId2]), true);
-			const double newCost = _subspaceCost(newExpEntropy, 2, params.trueNumVectors);
+																subspaceIdToJointPartition[subspaceId2]), true);
+			const double newNumClusters = estimateNumClusters(newExpEntropy, { subspaceId1, subspaceId2 }, params, partitions);
+			const double newCost = _subspaceCost(newNumClusters, 2, params.trueNumVectors);
 			const double changeInTotalCost = newCost - subspaceIdToCost[subspaceId1] - subspaceIdToCost[subspaceId2];
 
 			mergeQueue.emplace_back(MergeOp{ changeInTotalCost, { subspaceId1, subspaceId2 } });
@@ -97,15 +100,16 @@ SubspaceDecomposition computeSubspaceDecompositionNaive(const std::vector<Partit
 		// Add the new subspace to the maps
 		subspaceIdToJointPartition[subspaceId1] = jointPartition(partition1, partition2);
 		const double newExpEntropy = entropy(subspaceIdToJointPartition[subspaceId1], true);
-		dim_t newSubspaceDims = 0;
+		std::vector<dim_t> newSubspaceDimIds;
 		for (dim_t dimId = 0; dimId < numDims; ++dimId)
 		{
 			if (dimIdToSubspaceId[dimId] == subspaceId1)
 			{
-				++newSubspaceDims;
+				newSubspaceDimIds.push_back(dimId);
 			}
 		}
-		subspaceIdToCost[subspaceId1] = _subspaceCost(newExpEntropy, newSubspaceDims, params.trueNumVectors);
+		const double newNumClusters = estimateNumClusters(newExpEntropy, newSubspaceDimIds, params, partitions);
+		subspaceIdToCost[subspaceId1] = _subspaceCost(newNumClusters, newSubspaceDimIds.size(), params.trueNumVectors);
 
 		// Remove merges in the queue that involve the second merged subspace
 		mergeQueue.erase(
@@ -129,16 +133,17 @@ SubspaceDecomposition computeSubspaceDecompositionNaive(const std::vector<Partit
 			}
 
 			const double opExpEntropy = entropy(jointPartition(subspaceIdToJointPartition[op.second.first],
-				subspaceIdToJointPartition[op.second.second]), true);
-			dim_t opNumDims = 0;
+															   subspaceIdToJointPartition[op.second.second]), true);
+			std::vector<dim_t> opSubspaceDimIds;
 			for (dim_t dimId = 0; dimId < numDims; ++dimId)
 			{
 				if (dimIdToSubspaceId[dimId] == op.second.first || dimIdToSubspaceId[dimId] == op.second.second)
 				{
-					++opNumDims;
+					opSubspaceDimIds.push_back(dimId);
 				}
 			}
-			const double opCost = _subspaceCost(opExpEntropy, opNumDims, params.trueNumVectors);
+			const double opNumClusters = estimateNumClusters(opExpEntropy, opSubspaceDimIds, params, partitions);
+			const double opCost = _subspaceCost(opNumClusters, opSubspaceDimIds.size(), params.trueNumVectors);
 			op.first = opCost - subspaceIdToCost[op.second.first] - subspaceIdToCost[op.second.second];
 		}
 

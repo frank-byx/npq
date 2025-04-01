@@ -51,4 +51,4 @@ std::vector<std::pair<std::vector<short>, int>> doNaiveNPQ(const float* data, in
  * @param targetDistortionMargin The margin of error within which NPQ achieves the target distortion (see parameters.h).
  * @return The output codebook (and implicitly the subspace decomposition) of NPQ (see codebook.h).
  */
-std::vector<std::pair<std::vector<short>, std::vector<std::vector<float>>>> doNotSoNaiveNPQ(const float* data, int n, short d, int trueNumVectors, double targetDistortion, double targetDistortionMargin = 0.0);
+std::vector<std::pair<std::vector<short>, std::vector<std::vector<float>>>> doNotSoNaiveNPQ(const float* data, int n, short d, int trueNumVectors, double targetDistortion, double targetDistortionMargin, bool useCorrection);

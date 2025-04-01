@@ -72,6 +72,9 @@
     <ClCompile Include="compute_subspace_decomp_naive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="correction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="partition.h">
@@ -117,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="compute_subspace_decomp_naive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="correction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

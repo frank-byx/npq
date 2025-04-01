@@ -46,12 +46,12 @@ std::vector<std::pair<std::vector<short>, int>> doNaiveNPQ(const float* data, in
 
 
 Codebook _doNotSoNaiveNPQ(const scalar_t* data, id_t n, dim_t d,
-						  id_t trueNumVectors, double targetDistortion, double targetDistortionMargin)
+						  id_t trueNumVectors, double targetDistortion, double targetDistortionMargin, bool useCorrection)
 {
 	std::cout << "Running doNotSoNaiveNPQ." << std::endl;
 
 	const Dataset dataset{ data, n, d };
-	const Parameters params{ trueNumVectors, targetDistortion, targetDistortionMargin };
+	const Parameters params{ trueNumVectors, targetDistortion, targetDistortionMargin, -1, useCorrection };
 
 	// Step 1: Compute 1D partitions
 	std::cout << "Step 1: Compute 1D partitions" << std::endl;
@@ -66,7 +66,7 @@ Codebook _doNotSoNaiveNPQ(const scalar_t* data, id_t n, dim_t d,
 	return computeCodebook(subspaceDecomposition, partitions, dataset, params);
 }
 
-std::vector<std::pair<std::vector<short>, std::vector<std::vector<float>>>> doNotSoNaiveNPQ(const float* data, int n, short d, int trueNumVectors, double targetDistortion, double targetDistortionMargin)
+std::vector<std::pair<std::vector<short>, std::vector<std::vector<float>>>> doNotSoNaiveNPQ(const float* data, int n, short d, int trueNumVectors, double targetDistortion, double targetDistortionMargin, bool useCorrection)
 {
-	return _doNotSoNaiveNPQ(data, n, d, trueNumVectors, targetDistortion, targetDistortionMargin);
+	return _doNotSoNaiveNPQ(data, n, d, trueNumVectors, targetDistortion, targetDistortionMargin, useCorrection);
 }

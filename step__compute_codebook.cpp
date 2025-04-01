@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "algorithm_steps.h"
+#include "correction.h"
 #include "subspace_decomposition.h"
 
 
@@ -21,11 +22,14 @@ Codebook computeCodebook(const SubspaceDecomposition& decomp,
 	codebook.reserve(subspaceIds.size());
 	for (const dim_t& subspaceId : subspaceIds)
 	{
-		// For each subspace, the number of codewords is the exponential entropy of the joint partition, rounded up to
+		// For each subspace, the number of codewords is the estimated number of clusters, rounded up to
 		// the nearest power of 2 to make full use of the encoding bits, but capped by the number of partition blocks
 		Subspace dimIds = decomp.getDimIds(subspaceId);
 		Partition subspaceJointPartition = jointPartitionByIndices(partitions, dimIds);
-		id_t numCodewords = 1 << static_cast<int>(ceil(entropy(subspaceJointPartition, false)));
+		const double subspaceExpEntropy = entropy(subspaceJointPartition, true);
+		const double subspaceNumClusters = estimateNumClusters(subspaceExpEntropy, dimIds, params, partitions);
+
+		id_t numCodewords = 1 << static_cast<int>(ceil(log2(subspaceNumClusters)));
 		if (numCodewords > subspaceJointPartition.blockIdToVecIds.size())
 		{
 			numCodewords = static_cast<id_t>(subspaceJointPartition.blockIdToVecIds.size());

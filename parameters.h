@@ -47,7 +47,18 @@ struct Parameters
 	 */
 	dim_t mstMaxDegree;
 
-	Parameters(id_t trueNumVectors, double targetDistortion, double targetDistortionMargin = 0.0, dim_t mstMaxDegree = 0);
+	/**
+	 * @brief Flag that indicates whether to apply a correction to the estimated number of clusters of a subspace.
+	 * 
+	 * The algorithm will underestimate the number of clusters when the number of codewords in a subspace approaches
+	 * the size of the subsampled dataset that this algorithm takes as input, thus requiring a correction.
+	 *
+	 * If true, the algorithm will use a function of the exponentiated entropy, subsampling ratio, and counts of 1D partition blocks.
+	 * If false, the algorithm will directly use the exponentiated entropy as the estimated number of clusters. The default is false.
+	 */
+	bool useCorrection;
+
+	Parameters(id_t trueNumVectors, double targetDistortion, double targetDistortionMargin = 0.0, dim_t mstMaxDegree = 0, bool useCorrection = false);
 };
 
 } // namespace npq

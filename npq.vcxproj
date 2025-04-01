@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="1d_kmeans.cpp" />
     <ClCompile Include="compute_subspace_decomp_naive.cpp" />
+    <ClCompile Include="correction.cpp" />
     <ClCompile Include="greedy.cpp" />
     <ClCompile Include="naive_npq.cpp" />
     <ClCompile Include="natural_product_quantization.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="algorithm_steps.h" />
     <ClInclude Include="codebook.h" />
     <ClInclude Include="compute_subspace_decomp_naive.h" />
+    <ClInclude Include="correction.h" />
     <ClInclude Include="dataset.h" />
     <ClInclude Include="graph.h" />
     <ClInclude Include="greedy.h" />
