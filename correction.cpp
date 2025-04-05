@@ -27,7 +27,7 @@ double estimateNumClusters(double expEntropy, const std::vector<dim_t>& subspace
 	}
 	assert(expEntropy <= kProd);
 
-	const double correctedNumClusters = logRatio * expEntropy + (1.0 - logRatio) * kProd;
+	const double correctedNumClusters = pow(expEntropy, logRatio) * pow(kProd, 1.0 - logRatio);
 	return correctedNumClusters;
 }
 
